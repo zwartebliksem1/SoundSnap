@@ -78,10 +78,9 @@ export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading })
         audioRef.current.src = audioUrl;
         audioRef.current.currentTime = 0;
         audioRef.current.load();
+        await new Promise(resolve => setTimeout(resolve, 100));
+        audioRef.current.currentTime = 0;
         await audioRef.current.play();
-        if (audioRef.current.currentTime > 0.25) {
-          audioRef.current.currentTime = 0;
-        }
       }
 
       setIsPlaying(true);

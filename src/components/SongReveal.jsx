@@ -18,11 +18,13 @@ export default function SongReveal({ song, onNextSong, songsPlayed }) {
         className="relative"
       >
         <div className="absolute -inset-4 bg-gradient-to-br from-primary/30 to-accent/30 rounded-2xl blur-2xl" />
-        <img
-          src={song.albumArt}
-          alt={song.album}
-          className="relative w-56 h-56 md:w-64 md:h-64 rounded-2xl object-cover shadow-2xl"
-        />
+        {song.albumArt && (
+          <img
+            src={song.albumArt}
+            alt={song.album}
+            className="relative w-56 h-56 md:w-64 md:h-64 rounded-2xl object-cover shadow-2xl"
+          />
+        )}
       </motion.div>
 
       {/* Song Info */}
@@ -47,8 +49,8 @@ export default function SongReveal({ song, onNextSong, songsPlayed }) {
       >
         <DetailCard icon={Disc3} label="Album" value={song.album} />
         <DetailCard icon={Calendar} label="Year" value={song.year} />
-        <DetailCard icon={Tag} label="Genre" value={song.genre} />
-        <DetailCard icon={Music} label="Songs Played" value={songsPlayed} />
+        {/*<DetailCard icon={Tag} label="Genre" value={song.genre} />
+        <DetailCard icon={Music} label="Songs Played" value={songsPlayed} />*/}
       </motion.div>
 
       {/* Next Song Button */}

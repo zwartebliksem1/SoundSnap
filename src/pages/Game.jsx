@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { ArrowLeft, Music, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import AudioPlayer from "../components/AudioPlayer";
 import SongReveal from "../components/SongReveal";
 import ParticleBackground from "../components/ParticleBackground";
 import SpotifyConnect from "../components/SpotifyConnect";
+import GenreSelect from "../components/GenreSelect";
 import { getRandomSong } from "../lib/songData";
 import {
   isConnected,
@@ -19,6 +20,7 @@ import {
 } from "../lib/spotify";
 
 export default function Game() {
+  const navigate = useNavigate();
   const [connected, setConnected] = useState(isConnected());
   const [playMode, setPlayMode] = useState(isConnected() ? "premium" : null);
   const [phase, setPhase] = useState("playing");
@@ -37,11 +39,12 @@ export default function Game() {
   const [topTracksPool, setTopTracksPool] = useState([]);
   const [isLoadingTopTracks, setIsLoadingTopTracks] = useState(false);
   const [topTracksError, setTopTracksError] = useState("");
+  const [selectedGenre, setSelectedGenre] = useState(null);
 
   const canPlayPremiumFromTop = playMode === "premium" && connected && premiumSource === "top" && topTracksPool.length > 0;
   const canPlayPremiumFromPlaylist = playMode === "premium" && connected && premiumSource === "playlists" && !!selectedSpotifyPlaylistId;
   const shouldLoadPremiumSong = canPlayPremiumFromTop || canPlayPremiumFromPlaylist;
-  const shouldLoadPreviewSong = playMode === "preview" && connected;
+  const shouldLoadPreviewSong = playMode === "preview" && connected && selectedGenre !== null;
 
   const pickRandomFromPool = useCallback((pool, excludedIds = []) => {
     const available = pool.filter((item) => !excludedIds.includes(item.trackId));
@@ -86,7 +89,7 @@ export default function Game() {
 
     try {
       if (playMode === "preview") {
-        const { song, index } = getRandomSong(playedIndices);
+        const { song, index } = await getRandomSong(playedIndices, selectedGenre);
         setCurrentSong(song);
         setPlayedIndices((prev) => [...prev, index]);
 
@@ -125,7 +128,7 @@ export default function Game() {
           }
         }
       } else {
-        const { song, index } = getRandomSong(playedIndices);
+        const { song, index } = await getRandomSong(playedIndices, selectedGenre);
         setCurrentSong(song);
         setPlayedIndices((prev) => [...prev, index]);
         const url = await searchTrackPreview(song.title, song.artist);
@@ -135,7 +138,7 @@ export default function Game() {
     } finally {
       setIsLoading(false);
     }
-  }, [playMode, premiumSource, topTracksPool, pickRandomFromPool, playedIndices, selectedSpotifyPlaylistId, playedTrackIds]);
+  }, [playMode, premiumSource, topTracksPool, pickRandomFromPool, playedIndices, selectedSpotifyPlaylistId, playedTrackIds, selectedGenre]);
 
   useEffect(() => {
     if (shouldLoadPreviewSong) {
@@ -205,11 +208,17 @@ export default function Game() {
     setPlaylistError("");
     setTopTracksPool([]);
     setTopTracksError("");
+    setSelectedGenre(null);
   };
 
   const handleUsePreviewMode = () => {
     setPlayMode("preview");
     setConnected(true);
+  };
+
+  const handleGenreSelect = (genreId) => {
+    setSelectedGenre(genreId);
+    setPlayedIndices([]);
   };
 
   const handlePlaylistChange = (playlistId) => {
@@ -234,11 +243,17 @@ export default function Game() {
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Header */}
         <header className="flex items-center justify-between px-6 py-4">
-          <Link to="/">
-            <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              handleDisconnect();
+              navigate("/", { replace: true });
+            }}
+            className="rounded-full text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
           <div className="flex items-center gap-2">
             <Music className="w-4 h-4 text-primary" />
             <span className="font-heading font-semibold text-sm text-foreground">SoundSnap</span>
@@ -273,7 +288,11 @@ export default function Game() {
               </motion.div>
             )}
 
-            {connected && phase === "playing" && (
+            {connected && playMode === "preview" && selectedGenre === null && (
+              <GenreSelect key="genre-select" onSelect={handleGenreSelect} />
+            )}
+
+            {connected && phase === "playing" && (playMode === "premium" || selectedGenre !== null) && (
               <motion.div
                 key="playing"
                 initial={{ opacity: 0, x: -30 }}
@@ -297,72 +316,22 @@ export default function Game() {
 
                 {playMode === "premium" && (
                   <div className="mb-4 text-left">
-                    <div className="mb-3 grid grid-cols-2 gap-2">
+                    <p className="text-sm font-medium text-foreground mb-2">Your Top Songs</p>
+                    <div className="flex items-center justify-between gap-3 mb-2">
+                      <p className="text-xs text-muted-foreground">
+                        Loaded: {topTracksPool.length}
+                      </p>
                       <Button
-                        variant={premiumSource === "top" ? "default" : "outline"}
-                        className="h-9 rounded-full"
-                        onClick={() => handlePremiumSourceChange("top")}
+                        variant="outline"
+                        className="h-8 px-3 text-xs"
+                        onClick={loadTopTracks}
+                        disabled={isLoadingTopTracks}
                       >
-                        Top Songs
-                      </Button>
-                      <Button
-                        variant={premiumSource === "playlists" ? "default" : "outline"}
-                        className="h-9 rounded-full"
-                        onClick={() => handlePremiumSourceChange("playlists")}
-                      >
-                        Playlists
+                        Refresh
                       </Button>
                     </div>
 
-                    {premiumSource === "top" && (
-                      <div className="flex items-center justify-between gap-3 mb-2">
-                        <p className="text-xs text-muted-foreground">
-                          Loaded top songs: {topTracksPool.length}
-                        </p>
-                        <Button
-                          variant="outline"
-                          className="h-8 px-3 text-xs"
-                          onClick={loadTopTracks}
-                          disabled={isLoadingTopTracks}
-                        >
-                          Refresh
-                        </Button>
-                      </div>
-                    )}
-
-                    {premiumSource === "playlists" && (
-                      <>
-                    <label className="text-xs text-muted-foreground mb-1 block">Spotify Playlist</label>
-                    <select
-                      value={selectedSpotifyPlaylistId}
-                      onChange={(e) => handlePlaylistChange(e.target.value)}
-                      disabled={isLoadingPlaylists || !spotifyPlaylists.length}
-                      className="w-full rounded-xl border border-border bg-card px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
-                    >
-                      {spotifyPlaylists.map((playlist) => (
-                        <option key={playlist.id} value={playlist.id}>
-                          {playlist.name} ({playlist.trackCount ?? "?"})
-                        </option>
-                      ))}
-                    </select>
-
-                    {playlistError && (
-                      <div className="mt-2 flex items-center justify-between gap-3">
-                        <p className="text-xs text-destructive">{playlistError}</p>
-                        <Button
-                          variant="outline"
-                          className="h-8 px-3 text-xs"
-                          onClick={loadSpotifyPlaylists}
-                          disabled={isLoadingPlaylists}
-                        >
-                          Retry
-                        </Button>
-                      </div>
-                    )}
-                      </>
-                    )}
-
-                    {premiumSource === "top" && topTracksError && (
+                    {topTracksError && (
                       <div className="mt-2 flex items-center justify-between gap-3">
                         <p className="text-xs text-destructive">{topTracksError}</p>
                         <Button

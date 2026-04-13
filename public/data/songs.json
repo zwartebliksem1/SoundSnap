@@ -1,0 +1,365 @@
+{
+  "playlists": [
+    { "id": "oldies", "label": "Oldies", "description": "Classic hits from the past" },
+    { "id": "pop", "label": "Modern pop", "description": "Today's biggest hits" }
+  ],
+  "songs": [
+    {
+      "title": "Bohemian Rhapsody",
+      "artist": "Queen",
+      "album": "A Night at the Opera",
+      "year": 1975,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "Hotel California",
+      "artist": "Eagles",
+      "album": "Hotel California",
+      "year": 1977,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "Dreams",
+      "artist": "Fleetwood Mac",
+      "album": "Rumours",
+      "year": 1977,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "Stayin' Alive",
+      "artist": "Bee Gees",
+      "album": "Saturday Night Fever",
+      "year": 1977,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "Don't Stop Me Now",
+      "artist": "Queen",
+      "album": "Jazz",
+      "year": 1978,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "Another One Bites the Dust",
+      "artist": "Queen",
+      "album": "The Game",
+      "year": 1980,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "Billie Jean",
+      "artist": "Michael Jackson",
+      "album": "Thriller",
+      "year": 1982,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "Sweet Dreams (Are Made of This)",
+      "artist": "Eurythmics",
+      "album": "Sweet Dreams",
+      "year": 1983,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "Take on Me",
+      "artist": "a-ha",
+      "album": "Hunting High and Low",
+      "year": 1985,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "Livin' on a Prayer",
+      "artist": "Bon Jovi",
+      "album": "Slippery When Wet",
+      "year": 1986,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "Sweet Child O' Mine",
+      "artist": "Guns N' Roses",
+      "album": "Appetite for Destruction",
+      "year": 1987,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "Every Breath You Take",
+      "artist": "The Police",
+      "album": "Synchronicity",
+      "year": 1983,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "Under Pressure",
+      "artist": "Queen & David Bowie",
+      "album": "Hot Space",
+      "year": 1981,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "Africa",
+      "artist": "Toto",
+      "album": "Toto IV",
+      "year": 1982,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "I Wanna Dance with Somebody",
+      "artist": "Whitney Houston",
+      "album": "Whitney",
+      "year": 1987,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "Smells Like Teen Spirit",
+      "artist": "Nirvana",
+      "album": "Nevermind",
+      "year": 1991,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "Wonderwall",
+      "artist": "Oasis",
+      "album": "(What's the Story) Morning Glory?",
+      "year": 1995,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "I Want It That Way",
+      "artist": "Backstreet Boys",
+      "album": "Millennium",
+      "year": 1999,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "Bitter Sweet Symphony",
+      "artist": "The Verve",
+      "album": "Urban Hymns",
+      "year": 1997,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "No Scrubs",
+      "artist": "TLC",
+      "album": "FanMail",
+      "year": 1999,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "Mr. Brightside",
+      "artist": "The Killers",
+      "album": "Hot Fuss",
+      "year": 2003,
+      "playlists": ["oldies", "pop"]
+    },
+    {
+      "title": "Seven Nation Army",
+      "artist": "The White Stripes",
+      "album": "Elephant",
+      "year": 2003,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "Crazy in Love",
+      "artist": "Beyoncé ft. Jay-Z",
+      "album": "Dangerously in Love",
+      "year": 2003,
+      "playlists": ["oldies", "pop"]
+    },
+    {
+      "title": "Hey Ya!",
+      "artist": "OutKast",
+      "album": "Speakerboxxx/The Love Below",
+      "year": 2003,
+      "playlists": ["oldies"]
+    },
+    {
+      "title": "Somebody That I Used to Know",
+      "artist": "Gotye ft. Kimbra",
+      "album": "Making Mirrors",
+      "year": 2011,
+      "playlists": ["oldies", "pop"]
+    },
+    {
+      "title": "Rolling in the Deep",
+      "artist": "Adele",
+      "album": "21",
+      "year": 2010,
+      "playlists": ["oldies", "pop"]
+    },
+    {
+      "title": "Blinding Lights",
+      "artist": "The Weeknd",
+      "album": "After Hours",
+      "year": 2020,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "Shape of You",
+      "artist": "Ed Sheeran",
+      "album": "÷ (Divide)",
+      "year": 2017,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "Bad Guy",
+      "artist": "Billie Eilish",
+      "album": "When We All Fall Asleep, Where Do We Go?",
+      "year": 2019,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "Levitating",
+      "artist": "Dua Lipa",
+      "album": "Future Nostalgia",
+      "year": 2020,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "Uptown Funk",
+      "artist": "Mark Ronson ft. Bruno Mars",
+      "album": "Uptown Special",
+      "year": 2014,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "Stay",
+      "artist": "The Kid LAROI & Justin Bieber",
+      "album": "F*CK LOVE 3: OVER YOU",
+      "year": 2021,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "As It Was",
+      "artist": "Harry Styles",
+      "album": "Harry's House",
+      "year": 2022,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "Watermelon Sugar",
+      "artist": "Harry Styles",
+      "album": "Fine Line",
+      "year": 2019,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "Don't Start Now",
+      "artist": "Dua Lipa",
+      "album": "Future Nostalgia",
+      "year": 2019,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "Cruel Summer",
+      "artist": "Taylor Swift",
+      "album": "Lover",
+      "year": 2019,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "Anti-Hero",
+      "artist": "Taylor Swift",
+      "album": "Midnights",
+      "year": 2022,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "Flowers",
+      "artist": "Miley Cyrus",
+      "album": "Endless Summer Vacation",
+      "year": 2023,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "good 4 u",
+      "artist": "Olivia Rodrigo",
+      "album": "SOUR",
+      "year": 2021,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "Dance The Night",
+      "artist": "Dua Lipa",
+      "album": "Barbie The Album",
+      "year": 2023,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "Believer",
+      "artist": "Imagine Dragons",
+      "album": "Evolve",
+      "year": 2017,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "Sunflower",
+      "artist": "Post Malone & Swae Lee",
+      "album": "Spider-Man: Into the Spider-Verse",
+      "year": 2018,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "Sweater Weather",
+      "artist": "The Neighbourhood",
+      "album": "I Love You.",
+      "year": 2013,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "Can't Stop The Feeling!",
+      "artist": "Justin Timberlake",
+      "album": "TROLLS OST",
+      "year": 2016,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "drivers license",
+      "artist": "Olivia Rodrigo",
+      "album": "SOUR",
+      "year": 2021,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "Peaches",
+      "artist": "Justin Bieber ft. Daniel Caesar & Giveon",
+      "album": "Justice",
+      "year": 2021,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "Heat Waves",
+      "artist": "Glass Animals",
+      "album": "Dreamland",
+      "year": 2020,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "Save Your Tears",
+      "artist": "The Weeknd",
+      "album": "After Hours",
+      "year": 2020,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "Starboy",
+      "artist": "The Weeknd ft. Daft Punk",
+      "album": "Starboy",
+      "year": 2016,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "Happier Than Ever",
+      "artist": "Billie Eilish",
+      "album": "Happier Than Ever",
+      "year": 2021,
+      "playlists": ["pop"]
+    },
+    {
+      "title": "Espresso",
+      "artist": "Sabrina Carpenter",
+      "album": "espresso",
+      "year": 2024,
+      "playlists": ["pop"]
+    }
+  ]
+}
