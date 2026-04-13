@@ -309,6 +309,10 @@ export async function getRandomTrackFromPlaylist(playlistId, excludedTrackIds = 
   const baseUrl = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
 
   const metaRes = await fetch(`${baseUrl}?fields=total&limit=1`, { headers });
+  if (!metaRes.ok) {
+    return null;
+  }
+
   const meta = await metaRes.json();
   const total = meta.total || 0;
   if (!total) return null;
@@ -321,6 +325,11 @@ export async function getRandomTrackFromPlaylist(playlistId, excludedTrackIds = 
       `${baseUrl}?offset=${offset}&limit=50&market=from_token&fields=items(track(id,name,preview_url,artists(name),album(name,images,release_date)))`,
       { headers }
     );
+
+    if (!res.ok) {
+      continue;
+    }
+
     const data = await res.json();
     const track = pickTrackWithPreview(data.items || [], excludedTrackIds);
 

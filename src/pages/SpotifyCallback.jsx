@@ -28,12 +28,15 @@ export default function SpotifyCallback() {
       return;
     }
 
-    if (code) {
-      exchangeCodeForToken(code, state)
-        .then(() => navigate("/play", { replace: true }))
-        .catch(e => setError(e.message));
+    if (!code) {
+      navigate("/", { replace: true });
+      return;
     }
-  }, []);
+
+    exchangeCodeForToken(code, state)
+      .then(() => navigate("/play", { replace: true }))
+      .catch((e) => setError(e.message));
+  }, [navigate]);
 
   if (error) {
     return (

@@ -106,8 +106,14 @@ export default function Game() {
         if (!randomTrack) {
           setCurrentSong(null);
           setAudioUrl("");
-          setNoPreview(true);
+          if (premiumSource === "playlists") {
+            setPlaylistError("No playable tracks found in this playlist. Try another playlist.");
+            setNoPreview(false);
+          } else {
+            setNoPreview(true);
+          }
         } else {
+          setPlaylistError("");
           const fallbackUrl = randomTrack.previewUrl
             || await searchPublicPreviewClip(randomTrack.song.title, randomTrack.song.artist);
 
