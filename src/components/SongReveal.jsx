@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
-import { Music, Disc3, Calendar, Tag } from "lucide-react";
+import { Disc3, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function SongReveal({ song, onNextSong, songsPlayed }) {
+export default function SongReveal({ song, onNextSong, hasTeams, onGoToScoring }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -49,23 +49,30 @@ export default function SongReveal({ song, onNextSong, songsPlayed }) {
       >
         <DetailCard icon={Disc3} label="Album" value={song.album} />
         <DetailCard icon={Calendar} label="Year" value={song.year} />
-        {/*<DetailCard icon={Tag} label="Genre" value={song.genre} />
-        <DetailCard icon={Music} label="Songs Played" value={songsPlayed} />*/}
       </motion.div>
 
-      {/* Next Song Button */}
+      {/* Action Button */}
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.8 }}
         className="w-full"
       >
-        <Button
-          onClick={onNextSong}
-          className="w-full h-14 text-lg font-heading font-semibold bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity rounded-xl"
-        >
-          Play Next Song
-        </Button>
+        {hasTeams ? (
+          <Button
+            onClick={onGoToScoring}
+            className="w-full h-14 text-lg font-heading font-semibold bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity rounded-xl"
+          >
+            Assign Points
+          </Button>
+        ) : (
+          <Button
+            onClick={onNextSong}
+            className="w-full h-14 text-lg font-heading font-semibold bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity rounded-xl"
+          >
+            Play Next Song
+          </Button>
+        )}
       </motion.div>
     </motion.div>
   );

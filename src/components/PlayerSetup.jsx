@@ -1,7 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { UserPlus, X, Users, ArrowRight } from "lucide-react";
+import { UserPlus, X, Users, ArrowRight, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+const STORAGE_KEY = "soundsnap_players";
+
+function loadRememberedPlayers() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch { /* ignore */ }
+  return null;
+}
+
+function saveRememberedPlayers(names) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(names));
+  } catch { /* ignore */ }
+}
 
 const containerVariants = {
   hidden: {},
@@ -18,6 +37,21 @@ const itemVariants = {
 
 export default function PlayerSetup({ onContinueWithoutPlayers, onNext }) {
   const [names, setNames] = useState([""]);
+  const [remembered, setRemembered] = useState(null);
+
+  useEffect(() => {
+    const saved = loadRememberedPlayers();
+    if (saved) setRemembered(saved);
+  }, []);
+
+  const useRemembered = () => {
+    if (remembered) {
+      setNames(remembered);
+      setRemembered(null);
+    }
+  };
+
+  const dismissRemembered = () => setRemembered(null);
 
   const updateName = (i, value) =>
     setNames((prev) => prev.map((n, idx) => (idx === i ? value : n)));
@@ -55,6 +89,34 @@ export default function PlayerSetup({ onContinueWithoutPlayers, onNext }) {
           Playing with friends? Add their names to keep score.
         </p>
       </motion.div>
+
+      {/* Remembered players banner */}
+      {remembered && (
+        <motion.div
+          variants={itemVariants}
+          className="mb-4 rounded-xl border border-primary/30 bg-primary/5 backdrop-blur px-5 py-4"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-medium text-foreground">Previous players</p>
+            <button
+              onClick={dismissRemembered}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Dismiss
+            </button>
+          </div>
+          <p className="text-xs text-muted-foreground mb-3">{remembered.join(", ")}</p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={useRemembered}
+            className="rounded-full text-xs h-8"
+          >
+            <RotateCcw className="w-3 h-3 mr-1.5" />
+            Use these players
+          </Button>
+        </motion.div>
+      )}
 
       <div className="flex flex-col gap-3 mb-4">
         {names.map((name, i) => (
@@ -94,7 +156,10 @@ export default function PlayerSetup({ onContinueWithoutPlayers, onNext }) {
       <motion.div variants={itemVariants} className="mt-8 flex flex-col gap-3">
         {hasPlayers && (
           <Button
-            onClick={() => onNext(validNames)}
+            onClick={() => {
+              saveRememberedPlayers(validNames);
+              onNext(validNames);
+            }}
             className="w-full h-12 rounded-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all font-semibold text-base"
           >
             Next

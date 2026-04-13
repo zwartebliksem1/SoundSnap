@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ArrowLeft, Music, LogOut, Users } from "lucide-react";
+import { ArrowLeft, Music, LogOut, Users, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,6 +10,7 @@ import SpotifyConnect from "../components/SpotifyConnect";
 import GenreSelect from "../components/GenreSelect";
 import PlayerSetup from "../components/PlayerSetup";
 import TeamSetup from "../components/TeamSetup";
+import ScoreAssign from "../components/ScoreAssign";
 import { getRandomSong } from "../lib/songData";
 import {
   isConnected,
@@ -51,6 +52,7 @@ export default function Game() {
   const [maxSongsPerTeam, setMaxSongsPerTeam] = useState(10);
   const [teamPlayOrder, setTeamPlayOrder] = useState([]);
   const [currentTurnIndex, setCurrentTurnIndex] = useState(0);
+  const [scores, setScores] = useState({});  // { teamName: number }
 
   const currentTeam = teams.length > 0 && teamPlayOrder.length > 0
     ? teams[teamPlayOrder[currentTurnIndex % teamPlayOrder.length]]
@@ -260,6 +262,7 @@ export default function Game() {
     setMaxSongsPerTeam(10);
     setTeamPlayOrder([]);
     setCurrentTurnIndex(0);
+    setScores({});
   };
 
   const handleUsePreviewMode = () => {
@@ -288,8 +291,26 @@ export default function Game() {
     setMaxSongsPerTeam(maxSongs);
     setTeamPlayOrder(generatePlayOrder(configuredTeams.length, maxSongs));
     setCurrentTurnIndex(0);
+    setScores(Object.fromEntries(configuredTeams.map((t) => [t.name, 0])));
     setSetupStep(null);
     setSetupComplete(true);
+  };
+
+  const handleAssignPoints = (pts) => {
+    if (!currentTeam) return;
+    setScores((prev) => ({
+      ...prev,
+      [currentTeam.name]: (prev[currentTeam.name] || 0) + pts,
+    }));
+  };
+
+  const handleGoToScoring = () => {
+    setPhase("scoring");
+  };
+
+  const handleScoreConfirm = (pts) => {
+    handleAssignPoints(pts);
+    handleNextSong();
   };
 
   const handleTeamsBack = () => {
@@ -491,43 +512,96 @@ export default function Game() {
                 <SongReveal
                   song={currentSong}
                   onNextSong={handleNextSong}
-                  songsPlayed={songsPlayed}
+                  hasTeams={teams.length > 0}
+                  onGoToScoring={handleGoToScoring}
                 />
               </motion.div>
             )}
 
-            {connected && setupComplete && phase === "finished" && (
-              <motion.div
-                key="finished"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-                className="w-full max-w-md mx-auto text-center"
-              >
-                <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-6">
-                  <Music className="w-10 h-10 text-primary" />
-                </div>
-                <h2 className="font-heading text-3xl font-bold text-foreground mb-2">Game Over!</h2>
-                <p className="text-muted-foreground mb-8">All {totalGameSongs} songs have been played.</p>
-                <div className="grid gap-3 mb-8 {teams.length > 2 ? 'grid-cols-3' : 'grid-cols-2'}">
-                  {teams.map((team) => (
-                    <div key={team.name} className="rounded-xl border border-border/50 bg-card/40 p-4 text-center">
-                      <p className="text-sm font-semibold text-primary mb-1">{team.name}</p>
-                      <p className="text-xs text-muted-foreground">{team.players.join(", ")}</p>
-                    </div>
-                  ))}
-                </div>
-                <Button
-                  onClick={() => {
-                    handleDisconnect();
-                    navigate("/", { replace: true });
-                  }}
-                  className="h-14 px-8 rounded-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all font-heading font-semibold text-lg"
-                >
-                  Back to Home
-                </Button>
-              </motion.div>
+            {connected && setupComplete && phase === "scoring" && currentSong && currentTeam && (
+              <ScoreAssign
+                key={`scoring-${songsPlayed}`}
+                song={currentSong}
+                teamName={currentTeam.name}
+                onConfirm={handleScoreConfirm}
+              />
             )}
+
+            {connected && setupComplete && phase === "finished" && (() => {
+              const sorted = [...teams]
+                .map((t) => ({ ...t, score: scores[t.name] || 0 }))
+                .sort((a, b) => b.score - a.score);
+              const topScore = sorted[0]?.score ?? 0;
+              const winners = sorted.filter((t) => t.score === topScore);
+              const isTie = winners.length > 1;
+              return (
+                <motion.div
+                  key="finished"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="w-full max-w-md mx-auto text-center"
+                >
+                  <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-6">
+                    <Trophy className="w-10 h-10 text-primary" />
+                  </div>
+                  <h2 className="font-heading text-3xl font-bold text-foreground mb-2">
+                    {isTie ? "It's a tie!" : `${winners[0].name} wins!`}
+                  </h2>
+                  <p className="text-muted-foreground mb-8">
+                    {totalGameSongs} songs played &middot; {topScore} point{topScore !== 1 ? "s" : ""}
+                  </p>
+
+                  {/* Scoreboard */}
+                  <div className="flex flex-col gap-3 mb-8">
+                    {sorted.map((team, i) => {
+                      const isWinner = team.score === topScore;
+                      return (
+                        <div
+                          key={team.name}
+                          className={`flex items-center justify-between rounded-xl border px-5 py-4 ${
+                            isWinner
+                              ? "border-primary bg-primary/10"
+                              : "border-border/50 bg-card/40"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className={`text-lg font-bold ${
+                              isWinner ? "text-primary" : "text-muted-foreground"
+                            }`}>
+                              {i + 1}
+                            </span>
+                            <div className="text-left">
+                              <p className={`text-sm font-semibold ${
+                                isWinner ? "text-primary" : "text-foreground"
+                              }`}>
+                                {team.name}{isWinner && " 🏆"}
+                              </p>
+                              <p className="text-xs text-muted-foreground">{team.players.join(", ")}</p>
+                            </div>
+                          </div>
+                          <span className={`text-xl font-heading font-bold ${
+                            isWinner ? "text-primary" : "text-foreground"
+                          }`}>
+                            {team.score}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <Button
+                    onClick={() => {
+                      handleDisconnect();
+                      navigate("/", { replace: true });
+                    }}
+                    className="h-14 px-8 rounded-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all font-heading font-semibold text-lg"
+                  >
+                    Back to Home
+                  </Button>
+                </motion.div>
+              );
+            })()}
           </AnimatePresence>
         </div>
       </div>
