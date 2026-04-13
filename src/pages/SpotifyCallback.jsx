@@ -1,15 +1,27 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { exchangeCodeForToken } from "../lib/spotify";
 
 export default function SpotifyCallback() {
   const navigate = useNavigate();
   const [error, setError] = useState(null);
+  const hasHandledCallback = useRef(false);
 
   useEffect(() => {
+    if (hasHandledCallback.current) {
+      return;
+    }
+    hasHandledCallback.current = true;
+
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
+    const state = params.get("state");
     const err = params.get("error");
+
+    if (code || err || state) {
+      const cleanedUrl = `${window.location.pathname}${window.location.hash}`;
+      window.history.replaceState({}, document.title, cleanedUrl);
+    }
 
     if (err) {
       setError("Spotify authorization was denied.");
@@ -17,8 +29,8 @@ export default function SpotifyCallback() {
     }
 
     if (code) {
-      exchangeCodeForToken(code)
-        .then(() => navigate("/play"))
+      exchangeCodeForToken(code, state)
+        .then(() => navigate("/play", { replace: true }))
         .catch(e => setError(e.message));
     }
   }, []);

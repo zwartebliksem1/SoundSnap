@@ -14,9 +14,33 @@ function getDefaultRedirectUri() {
 
 const REDIRECT_URI = import.meta.env.PROD ? PRODUCTION_REDIRECT_URI : (ENV_REDIRECT_URI || getDefaultRedirectUri());
 const SCOPES = "streaming user-read-email user-read-private playlist-read-private playlist-read-collaborative user-top-read";
+const CODE_VERIFIER_KEY = "spotify_code_verifier";
+const OAUTH_STATE_KEY = "spotify_oauth_state";
 
 export function getSpotifyRedirectUri() {
   return REDIRECT_URI;
+}
+
+function setPkceSession(codeVerifier, state) {
+  sessionStorage.setItem(CODE_VERIFIER_KEY, codeVerifier);
+  sessionStorage.setItem(OAUTH_STATE_KEY, state);
+
+  // Keep fallback values for browsers where sessionStorage may be unavailable.
+  localStorage.setItem(CODE_VERIFIER_KEY, codeVerifier);
+  localStorage.setItem(OAUTH_STATE_KEY, state);
+}
+
+function getPkceSession() {
+  const codeVerifier = sessionStorage.getItem(CODE_VERIFIER_KEY) || localStorage.getItem(CODE_VERIFIER_KEY);
+  const state = sessionStorage.getItem(OAUTH_STATE_KEY) || localStorage.getItem(OAUTH_STATE_KEY);
+  return { codeVerifier, state };
+}
+
+function clearPkceSession() {
+  sessionStorage.removeItem(CODE_VERIFIER_KEY);
+  sessionStorage.removeItem(OAUTH_STATE_KEY);
+  localStorage.removeItem(CODE_VERIFIER_KEY);
+  localStorage.removeItem(OAUTH_STATE_KEY);
 }
 
 // --- PKCE Helpers ---
@@ -41,16 +65,21 @@ function base64urlEncode(buffer) {
 }
 
 export async function initiateSpotifyLogin() {
+  disconnectSpotify();
+
   const codeVerifier = generateRandomString(64);
+  const state = generateRandomString(32);
   const hashed = await sha256(codeVerifier);
   const codeChallenge = base64urlEncode(hashed);
 
-  localStorage.setItem("spotify_code_verifier", codeVerifier);
+  setPkceSession(codeVerifier, state);
 
   const params = new URLSearchParams({
     response_type: "code",
     client_id: CLIENT_ID,
     scope: SCOPES,
+    show_dialog: "true",
+    state,
     redirect_uri: REDIRECT_URI,
     code_challenge_method: "S256",
     code_challenge: codeChallenge,
@@ -59,8 +88,18 @@ export async function initiateSpotifyLogin() {
   window.location.href = `https://accounts.spotify.com/authorize?${params}`;
 }
 
-export async function exchangeCodeForToken(code) {
-  const codeVerifier = localStorage.getItem("spotify_code_verifier");
+export async function exchangeCodeForToken(code, returnedState) {
+  const { codeVerifier, state } = getPkceSession();
+
+  if (!codeVerifier) {
+    throw new Error("Login session expired. Please reconnect Spotify.");
+  }
+
+  if (returnedState && state && returnedState !== state) {
+    clearPkceSession();
+    throw new Error("Spotify login session mismatch. Please reconnect Spotify.");
+  }
+
   const res = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -74,11 +113,14 @@ export async function exchangeCodeForToken(code) {
   });
   const data = await res.json();
   if (data.access_token) {
+    clearPkceSession();
     localStorage.setItem("spotify_access_token", data.access_token);
     localStorage.setItem("spotify_refresh_token", data.refresh_token || "");
     localStorage.setItem("spotify_token_expiry", Date.now() + data.expires_in * 1000);
     return data.access_token;
   }
+
+  clearPkceSession();
   throw new Error(data.error_description || "Failed to exchange token");
 }
 
@@ -119,7 +161,7 @@ export function disconnectSpotify() {
   localStorage.removeItem("spotify_access_token");
   localStorage.removeItem("spotify_refresh_token");
   localStorage.removeItem("spotify_token_expiry");
-  localStorage.removeItem("spotify_code_verifier");
+  clearPkceSession();
 }
 
 export async function searchTrackPreview(title, artist) {
@@ -168,6 +210,11 @@ export async function getUserPlaylists() {
     } catch {
       // Keep default message.
     }
+
+    if (res.status === 403) {
+      throw new Error("Spotify playlist permission missing. Disconnect and reconnect Spotify.");
+    }
+
     throw new Error(message);
   }
 
