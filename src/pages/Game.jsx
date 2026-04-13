@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ArrowLeft, Music, LogOut } from "lucide-react";
+import { ArrowLeft, Music, LogOut, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,6 +8,8 @@ import SongReveal from "../components/SongReveal";
 import ParticleBackground from "../components/ParticleBackground";
 import SpotifyConnect from "../components/SpotifyConnect";
 import GenreSelect from "../components/GenreSelect";
+import PlayerSetup from "../components/PlayerSetup";
+import TeamSetup from "../components/TeamSetup";
 import { getRandomSong } from "../lib/songData";
 import {
   isConnected,
@@ -41,10 +43,37 @@ export default function Game() {
   const [topTracksError, setTopTracksError] = useState("");
   const [selectedGenre, setSelectedGenre] = useState(null);
 
+  // --- Player / team setup state ---
+  const [setupStep, setSetupStep] = useState(null);   // "players" | "teams" | null
+  const [setupComplete, setSetupComplete] = useState(false);
+  const [players, setPlayers] = useState([]);
+  const [teams, setTeams] = useState([]);             // [{ name, players }]
+  const [maxSongsPerTeam, setMaxSongsPerTeam] = useState(10);
+  const [teamPlayOrder, setTeamPlayOrder] = useState([]);
+  const [currentTurnIndex, setCurrentTurnIndex] = useState(0);
+
+  const currentTeam = teams.length > 0 && teamPlayOrder.length > 0
+    ? teams[teamPlayOrder[currentTurnIndex % teamPlayOrder.length]]
+    : null;
+  const totalGameSongs = teams.length > 0 ? teams.length * maxSongsPerTeam : 0;
+
+  function generatePlayOrder(teamCount, maxSongs) {
+    const order = [];
+    for (let round = 0; round < maxSongs; round++) {
+      const indices = Array.from({ length: teamCount }, (_, i) => i);
+      for (let i = indices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indices[i], indices[j]] = [indices[j], indices[i]];
+      }
+      order.push(...indices);
+    }
+    return order;
+  }
+
   const canPlayPremiumFromTop = playMode === "premium" && connected && premiumSource === "top" && topTracksPool.length > 0;
   const canPlayPremiumFromPlaylist = playMode === "premium" && connected && premiumSource === "playlists" && !!selectedSpotifyPlaylistId;
-  const shouldLoadPremiumSong = canPlayPremiumFromTop || canPlayPremiumFromPlaylist;
-  const shouldLoadPreviewSong = playMode === "preview" && connected && selectedGenre !== null;
+  const shouldLoadPremiumSong = (canPlayPremiumFromTop || canPlayPremiumFromPlaylist) && setupComplete;
+  const shouldLoadPreviewSong = playMode === "preview" && connected && selectedGenre !== null && setupComplete;
 
   const pickRandomFromPool = useCallback((pool, excludedIds = []) => {
     const available = pool.filter((item) => !excludedIds.includes(item.trackId));
@@ -183,12 +212,27 @@ export default function Game() {
     }
   }, [connected, playMode, premiumSource, loadTopTracks]);
 
+  // Show player setup once the content source is determined
+  useEffect(() => {
+    if (connected && playMode === "premium" && setupStep === null && !setupComplete) {
+      setSetupStep("players");
+    }
+  }, [connected, playMode]);
+
   const handleTimeUp = () => {
     setSongsPlayed(prev => prev + 1);
     setPhase("reveal");
   };
 
   const handleNextSong = () => {
+    if (teams.length > 0) {
+      const nextTurn = currentTurnIndex + 1;
+      if (nextTurn >= teamPlayOrder.length) {
+        setPhase("finished");
+        return;
+      }
+      setCurrentTurnIndex(nextTurn);
+    }
     loadSong();
   };
 
@@ -209,6 +253,13 @@ export default function Game() {
     setTopTracksPool([]);
     setTopTracksError("");
     setSelectedGenre(null);
+    setSetupStep(null);
+    setSetupComplete(false);
+    setPlayers([]);
+    setTeams([]);
+    setMaxSongsPerTeam(10);
+    setTeamPlayOrder([]);
+    setCurrentTurnIndex(0);
   };
 
   const handleUsePreviewMode = () => {
@@ -219,6 +270,30 @@ export default function Game() {
   const handleGenreSelect = (genreId) => {
     setSelectedGenre(genreId);
     setPlayedIndices([]);
+    setSetupStep("players");
+  };
+
+  const handleContinueWithoutPlayers = () => {
+    setSetupStep(null);
+    setSetupComplete(true);
+  };
+
+  const handlePlayersNext = (playerNames) => {
+    setPlayers(playerNames);
+    setSetupStep("teams");
+  };
+
+  const handleTeamsStart = ({ teams: configuredTeams, maxSongsPerTeam: maxSongs }) => {
+    setTeams(configuredTeams);
+    setMaxSongsPerTeam(maxSongs);
+    setTeamPlayOrder(generatePlayOrder(configuredTeams.length, maxSongs));
+    setCurrentTurnIndex(0);
+    setSetupStep(null);
+    setSetupComplete(true);
+  };
+
+  const handleTeamsBack = () => {
+    setSetupStep("players");
   };
 
   const handlePlaylistChange = (playlistId) => {
@@ -259,11 +334,11 @@ export default function Game() {
             <span className="font-heading font-semibold text-sm text-foreground">SoundSnap</span>
           </div>
           <div className="flex items-center gap-2">
-            {connected && (
+            {connected && setupComplete && (
               <>
                 <div className="flex items-center gap-1.5 bg-card/50 backdrop-blur border border-border/50 rounded-full px-3 py-1.5">
-                  <span className="text-xs text-muted-foreground">Played</span>
-                  <span className="text-sm font-heading font-bold text-primary">{songsPlayed}</span>
+                  <span className="text-xs text-muted-foreground">Song</span>
+                  <span className="text-sm font-heading font-bold text-primary">{songsPlayed}{totalGameSongs > 0 ? ` / ${totalGameSongs}` : ""}</span>
                 </div>
                 <Button
                   variant="ghost"
@@ -288,11 +363,30 @@ export default function Game() {
               </motion.div>
             )}
 
-            {connected && playMode === "preview" && selectedGenre === null && (
+            {connected && playMode === "preview" && selectedGenre === null && !setupComplete && (
               <GenreSelect key="genre-select" onSelect={handleGenreSelect} />
             )}
 
-            {connected && phase === "playing" && (playMode === "premium" || selectedGenre !== null) && (
+            {connected && setupStep === "players" && (
+              <motion.div key="player-setup" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <PlayerSetup
+                  onContinueWithoutPlayers={handleContinueWithoutPlayers}
+                  onNext={handlePlayersNext}
+                />
+              </motion.div>
+            )}
+
+            {connected && setupStep === "teams" && (
+              <motion.div key="team-setup" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <TeamSetup
+                  players={players}
+                  onStart={handleTeamsStart}
+                  onBack={handleTeamsBack}
+                />
+              </motion.div>
+            )}
+
+            {connected && setupComplete && phase === "playing" && (playMode === "premium" || selectedGenre !== null) && (
               <motion.div
                 key="playing"
                 initial={{ opacity: 0, x: -30 }}
@@ -301,6 +395,15 @@ export default function Game() {
                 transition={{ duration: 0.3 }}
                 className="w-full max-w-md mx-auto"
               >
+                {currentTeam && (
+                  <div className="text-center mb-4">
+                    <span className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-4 py-1.5 text-sm font-medium text-primary">
+                      <Users className="w-4 h-4" />
+                      {currentTeam.name}{currentTeam.players.length === 1 ? "'s" : "'s"} turn
+                    </span>
+                  </div>
+                )}
+
                 <div className="text-center mb-8">
                   <h2 className="font-heading text-2xl font-bold text-foreground mb-2">
                     {isLoading ? "Finding a song..." : "Listen carefully..."}
@@ -368,7 +471,7 @@ export default function Game() {
               </motion.div>
             )}
 
-            {connected && phase === "reveal" && currentSong && (
+            {connected && setupComplete && phase === "reveal" && currentSong && (
               <motion.div
                 key="reveal"
                 initial={{ opacity: 0, x: -30 }}
@@ -377,11 +480,52 @@ export default function Game() {
                 transition={{ duration: 0.3 }}
                 className="w-full"
               >
+                {currentTeam && (
+                  <div className="text-center mb-4">
+                    <span className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-4 py-1.5 text-sm font-medium text-primary">
+                      <Users className="w-4 h-4" />
+                      {currentTeam.name}
+                    </span>
+                  </div>
+                )}
                 <SongReveal
                   song={currentSong}
                   onNextSong={handleNextSong}
                   songsPlayed={songsPlayed}
                 />
+              </motion.div>
+            )}
+
+            {connected && setupComplete && phase === "finished" && (
+              <motion.div
+                key="finished"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                className="w-full max-w-md mx-auto text-center"
+              >
+                <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-6">
+                  <Music className="w-10 h-10 text-primary" />
+                </div>
+                <h2 className="font-heading text-3xl font-bold text-foreground mb-2">Game Over!</h2>
+                <p className="text-muted-foreground mb-8">All {totalGameSongs} songs have been played.</p>
+                <div className="grid gap-3 mb-8 {teams.length > 2 ? 'grid-cols-3' : 'grid-cols-2'}">
+                  {teams.map((team) => (
+                    <div key={team.name} className="rounded-xl border border-border/50 bg-card/40 p-4 text-center">
+                      <p className="text-sm font-semibold text-primary mb-1">{team.name}</p>
+                      <p className="text-xs text-muted-foreground">{team.players.join(", ")}</p>
+                    </div>
+                  ))}
+                </div>
+                <Button
+                  onClick={() => {
+                    handleDisconnect();
+                    navigate("/", { replace: true });
+                  }}
+                  className="h-14 px-8 rounded-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all font-heading font-semibold text-lg"
+                >
+                  Back to Home
+                </Button>
               </motion.div>
             )}
           </AnimatePresence>

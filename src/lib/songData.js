@@ -7,7 +7,18 @@ async function loadData() {
   if (_cache) return _cache;
   const base = import.meta.env.BASE_URL || "/";
   const res = await fetch(`${base}data/songs.json`);
-  _cache = await res.json();
+  const rawData = await res.json();
+
+  // Allow snake_case (preview_url) in songs.json while keeping camelCase in app code.
+  const normalizedSongs = (rawData.songs || []).map((song) => ({
+    ...song,
+    previewUrl: song.previewUrl || song.preview_url || null,
+  }));
+
+  _cache = {
+    ...rawData,
+    songs: normalizedSongs,
+  };
   return _cache;
 }
 
