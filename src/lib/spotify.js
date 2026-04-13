@@ -2,6 +2,7 @@
 // Set your Spotify App Client ID below (create one at https://developer.spotify.com/dashboard)
 const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID || "";
 const PRODUCTION_REDIRECT_URI = "https://zwartebliksem1.github.io/SoundSnap/";
+const ENV_REDIRECT_URI = import.meta.env.VITE_SPOTIFY_REDIRECT_URI?.trim();
 
 function getDefaultRedirectUri() {
   if (import.meta.env.PROD) {
@@ -11,7 +12,7 @@ function getDefaultRedirectUri() {
   return "https://localhost:4202/callback";
 }
 
-const REDIRECT_URI = import.meta.env.VITE_SPOTIFY_REDIRECT_URI || getDefaultRedirectUri();
+const REDIRECT_URI = import.meta.env.PROD ? PRODUCTION_REDIRECT_URI : (ENV_REDIRECT_URI || getDefaultRedirectUri());
 const SCOPES = "streaming user-read-email user-read-private playlist-read-private playlist-read-collaborative user-top-read";
 
 export function getSpotifyRedirectUri() {
