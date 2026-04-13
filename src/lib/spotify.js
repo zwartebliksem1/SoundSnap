@@ -198,34 +198,36 @@ export async function getUserPlaylists() {
   const token = await getAccessToken();
   if (!token) return [];
 
-  const res = await fetch("https://api.spotify.com/v1/me/playlists?limit=50", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  let url = "https://api.spotify.com/v1/me/playlists?limit=50";
+  const playlists = [];
 
-  if (!res.ok) {
-    let message = `Failed to load playlists (${res.status})`;
-    try {
-      const err = await res.json();
-      message = err?.error?.message || message;
-    } catch {
-      // Keep default message.
-    }
-
-    if (res.status === 403) {
-      throw new Error("Spotify playlist permission missing. Disconnect and reconnect Spotify.");
-    }
-
-    throw new Error(message);
+  while (url) {
+    const data = await spotifyGetJson(url, token);
+    playlists.push(...(data.items || []));
+    url = data.next;
   }
 
-  const data = await res.json();
-  const playlists = data.items || [];
+  const mapped = await Promise.all(
+    playlists.map(async (playlist) => {
+      let trackCount = playlist?.tracks?.total;
 
-  return playlists.map((playlist) => ({
-    id: playlist.id,
-    name: playlist.name,
-    trackCount: playlist.tracks?.total || 0,
-  }));
+      if (trackCount == null && playlist?.id) {
+        try {
+          trackCount = await getPlaylistTrackTotal(playlist.id, token);
+        } catch {
+          trackCount = null;
+        }
+      }
+
+      return {
+        id: playlist.id,
+        name: playlist.name,
+        trackCount,
+      };
+    })
+  );
+
+  return mapped;
 }
 
 function pickTrackWithPreview(items, excludedIds = []) {
@@ -275,6 +277,23 @@ async function spotifyGetJson(url, token) {
   return res.json();
 }
 
+function shuffle(array) {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+async function getPlaylistTrackTotal(playlistId, token) {
+  const data = await spotifyGetJson(
+    `https://api.spotify.com/v1/playlists/${playlistId}?fields=tracks(total)`,
+    token
+  );
+  return data?.tracks?.total ?? 0;
+}
+
 export async function getUserTopTracksPool() {
   const token = await getAccessToken();
   if (!token) return [];
@@ -308,21 +327,19 @@ export async function getRandomTrackFromPlaylist(playlistId, excludedTrackIds = 
   const headers = { Authorization: `Bearer ${token}` };
   const baseUrl = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
 
-  const metaRes = await fetch(`${baseUrl}?fields=total&limit=1`, { headers });
-  if (!metaRes.ok) {
-    return null;
-  }
-
-  const meta = await metaRes.json();
-  const total = meta.total || 0;
+  const meta = await spotifyGetJson(`${baseUrl}?fields=total&limit=1`, token);
+  const total = meta?.total || 0;
   if (!total) return null;
 
-  const attempts = Math.min(6, Math.max(1, Math.ceil(total / 50)));
-  for (let i = 0; i < attempts; i += 1) {
-    const maxOffset = Math.max(0, total - 50);
-    const offset = maxOffset ? Math.floor(Math.random() * maxOffset) : 0;
+  const pageSize = 100;
+  const offsets = [];
+  for (let offset = 0; offset < total; offset += pageSize) {
+    offsets.push(offset);
+  }
+
+  for (const offset of shuffle(offsets)) {
     const res = await fetch(
-      `${baseUrl}?offset=${offset}&limit=50&market=from_token&fields=items(track(id,name,preview_url,artists(name),album(name,images,release_date)))`,
+      `${baseUrl}?offset=${offset}&limit=${pageSize}&fields=items(track(id,name,preview_url,is_playable,artists(name),album(name,images,release_date))),total`,
       { headers }
     );
 

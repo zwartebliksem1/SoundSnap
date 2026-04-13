@@ -341,7 +341,7 @@ export default function Game() {
                     >
                       {spotifyPlaylists.map((playlist) => (
                         <option key={playlist.id} value={playlist.id}>
-                          {playlist.name} ({playlist.trackCount})
+                          {playlist.name} ({playlist.trackCount ?? "?"})
                         </option>
                       ))}
                     </select>
