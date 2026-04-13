@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Music2, ExternalLink } from "lucide-react";
-import { initiateSpotifyLogin, hasClientId } from "../lib/spotify";
+import { initiateSpotifyLogin, hasClientId, getSpotifyRedirectUri } from "../lib/spotify";
 
 export default function SpotifyConnect({ onUsePreview }) {
   const clientIdMissing = !hasClientId();
-  const redirectUri = import.meta.env.VITE_SPOTIFY_REDIRECT_URI || new URL(import.meta.env.BASE_URL, window.location.origin).toString();
+  const redirectUri = getSpotifyRedirectUri();
 
   return (
     <motion.div

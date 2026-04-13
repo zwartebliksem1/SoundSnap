@@ -1,9 +1,22 @@
 // Spotify OAuth PKCE flow + API helpers
 // Set your Spotify App Client ID below (create one at https://developer.spotify.com/dashboard)
 const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID || "";
-const DEFAULT_REDIRECT_URI = new URL(import.meta.env.BASE_URL, window.location.origin).toString();
-const REDIRECT_URI = import.meta.env.VITE_SPOTIFY_REDIRECT_URI || DEFAULT_REDIRECT_URI;
+const PRODUCTION_REDIRECT_URI = "https://zwartebliksem1.github.io/SoundSnap/";
+
+function getDefaultRedirectUri() {
+  if (import.meta.env.PROD) {
+    return PRODUCTION_REDIRECT_URI;
+  }
+
+  return "https://localhost:4202/callback";
+}
+
+const REDIRECT_URI = import.meta.env.VITE_SPOTIFY_REDIRECT_URI || getDefaultRedirectUri();
 const SCOPES = "streaming user-read-email user-read-private playlist-read-private playlist-read-collaborative user-top-read";
+
+export function getSpotifyRedirectUri() {
+  return REDIRECT_URI;
+}
 
 // --- PKCE Helpers ---
 function generateRandomString(length) {

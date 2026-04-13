@@ -97,4 +97,5 @@ This app now builds for a GitHub Pages project site under `/SoundSnap/`.
 - Build with `npm run build`
 - Deploy the contents of `dist/`
 - Routes use hash navigation, so Pages-friendly URLs look like `https://zwartebliksem1.github.io/SoundSnap/#/play`
-- For Spotify OAuth, set `VITE_SPOTIFY_REDIRECT_URI=https://zwartebliksem1.github.io/SoundSnap/` in your deployment environment and register that exact URI in the Spotify developer dashboard
+- Spotify OAuth defaults to `https://zwartebliksem1.github.io/SoundSnap/` in production.
+- Optionally set `VITE_SPOTIFY_REDIRECT_URI=https://zwartebliksem1.github.io/SoundSnap/` in your deployment environment and register that exact URI in the Spotify developer dashboard.

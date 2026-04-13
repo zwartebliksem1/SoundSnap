@@ -85,7 +85,7 @@ export default function Home() {
           transition={{ delay: 1.2 }}
           className="mt-16 text-xs text-muted-foreground/50"
         >
-          Powered by Spotify preview clips
+          Powered by Spotify
         </motion.p>
       </div>
     </div>
