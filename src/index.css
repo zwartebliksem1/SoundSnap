@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+
+  --background: 240 10% 7%;
+  --foreground: 0 0% 95%;
+
+  --card: 240 10% 11%;
+  --card-foreground: 0 0% 95%;
+
+  --muted: 240 8% 18%;
+  --muted-foreground: 240 5% 55%;
+
+  --border: 240 8% 20%;
+
+  --primary: 271 81% 66%;
+  --primary-foreground: 0 0% 100%;
+
+  --accent: 316 73% 62%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 63% 55%;
+  --destructive-foreground: 0 0% 100%;
+
+  color-scheme: dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-heading), system-ui, sans-serif;
+}
+
+#root {
+  min-height: 100svh;
+}
