@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Shuffle, List, Disc2, Zap, Flag, Lock, ArrowLeft, Check } from "lucide-react";
-import { getPlaylists } from "../lib/songData";
+import { getPlaylists, getSongCount } from "../lib/songData";
 
 const ICON_MAP = {
   oldies: Disc2,
@@ -25,8 +25,8 @@ const containerVariants = {
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, x: -30 },
-  show: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 24 } },
+  hidden: { opacity: 0, y: -20 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } },
 };
 
 const MAX_LISTS = 5;
@@ -35,19 +35,58 @@ export default function GenreSelect({ onSelect }) {
   const [view, setView] = useState("main"); // "main" | "lists"
   const [availablePlaylists, setAvailablePlaylists] = useState([]);
   const [selected, setSelected] = useState([]);
+  const [counts, setCounts] = useState({});
+  const [isLoadingGenres, setIsLoadingGenres] = useState(true);
 
   useEffect(() => {
-    getPlaylists().then(setAvailablePlaylists);
+    let active = true;
+
+    async function loadGenreData() {
+      try {
+        const playlists = await getPlaylists();
+        const mixCount = await getSongCount("mix");
+        const playlistCounts = await Promise.all(
+          playlists.map(async (p) => [p.id, await getSongCount(p.id)])
+        );
+
+        if (!active) return;
+        setAvailablePlaylists(playlists);
+        setCounts({ mix: mixCount, ...Object.fromEntries(playlistCounts) });
+      } finally {
+        if (active) setIsLoadingGenres(false);
+      }
+    }
+
+    loadGenreData();
+    return () => {
+      active = false;
+    };
   }, []);
 
-  // Build genre rows from the data-driven playlists + static entries
-  const genres = [
-    { id: "mix", label: "Mix everything", description: "All genres shuffled together", icon: Shuffle, disabled: false },
-    { id: "lists", label: "Select lists", description: "Choose your own playlists", icon: List, disabled: false },
+  const topOptions = [
+    {
+      id: "mix",
+      label: "Mix everything",
+      description: "All genres shuffled together",
+      songCount: counts.mix ?? 0,
+      icon: Shuffle,
+      disabled: false,
+    },
+    {
+      id: "lists",
+      label: "Select lists",
+      description: "Choose your own playlists",
+      icon: List,
+      disabled: false,
+    },
+  ];
+
+  const presetGenres = [
     ...availablePlaylists.map((p) => ({
       id: p.id,
       label: p.label,
       description: p.description,
+      songCount: counts[p.id] ?? 0,
       icon: ICON_MAP[p.id] || Disc2,
       disabled: false,
     })),
@@ -62,6 +101,56 @@ export default function GenreSelect({ onSelect }) {
 
   const handleConfirmLists = () => {
     if (selected.length > 0) onSelect(selected);
+  };
+
+  const renderGenreButton = (genre) => {
+    const IconComponent = genre.icon;
+    return (
+      <motion.button
+        key={genre.id}
+        variants={itemVariants}
+        whileHover={!genre.disabled ? { scale: 1.02 } : {}}
+        whileTap={!genre.disabled ? { scale: 0.98 } : {}}
+        onClick={() => {
+          if (genre.disabled) return;
+          if (genre.id === "lists") {
+            setView("lists");
+          } else {
+            onSelect(genre.id);
+          }
+        }}
+        disabled={genre.disabled}
+        className={`group relative flex items-center gap-4 w-full rounded-2xl border px-5 py-4 text-left transition-colors
+          ${genre.disabled
+            ? "border-border/50 bg-card/30 opacity-50 cursor-not-allowed"
+            : "border-border bg-card/60 backdrop-blur hover:border-primary/40 hover:bg-card cursor-pointer"
+          }`}
+      >
+        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors
+          ${genre.disabled
+            ? "bg-muted/50 text-muted-foreground/50"
+            : "bg-primary/10 text-primary group-hover:bg-primary/20"
+          }`}
+        >
+          <IconComponent className="w-5 h-5" />
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-foreground">{genre.label}</p>
+          <p className="text-xs text-muted-foreground">{genre.description}</p>
+        </div>
+
+        {typeof genre.songCount === "number" && !genre.disabled && (
+          <span className="shrink-0 text-xs font-medium text-muted-foreground">
+            {genre.songCount} songs
+          </span>
+        )}
+
+        {genre.disabled && (
+          <Lock className="w-4 h-4 text-muted-foreground/50 shrink-0" />
+        )}
+      </motion.button>
+    );
   };
 
   if (view === "lists") {
@@ -116,6 +205,9 @@ export default function GenreSelect({ onSelect }) {
                   <p className="text-sm font-semibold text-foreground">{pl.label}</p>
                   <p className="text-xs text-muted-foreground">{pl.description}</p>
                 </div>
+                <span className="shrink-0 text-xs font-medium text-muted-foreground">
+                  {counts[pl.id] ?? 0} songs
+                </span>
               </motion.button>
             );
           })}
@@ -155,51 +247,27 @@ export default function GenreSelect({ onSelect }) {
         </p>
       </motion.div>
 
-      <div className="flex flex-col gap-3">
-        {genres.map((genre) => {
-          const IconComponent = genre.icon;
-          return (
-            <motion.button
-              key={genre.id}
-              variants={itemVariants}
-              whileHover={!genre.disabled ? { scale: 1.02 } : {}}
-              whileTap={!genre.disabled ? { scale: 0.98 } : {}}
-              onClick={() => {
-                if (genre.disabled) return;
-                if (genre.id === "lists") {
-                  setView("lists");
-                } else {
-                  onSelect(genre.id);
-                }
-              }}
-              disabled={genre.disabled}
-              className={`group relative flex items-center gap-4 w-full rounded-2xl border px-5 py-4 text-left transition-colors
-                ${genre.disabled
-                  ? "border-border/50 bg-card/30 opacity-50 cursor-not-allowed"
-                  : "border-border bg-card/60 backdrop-blur hover:border-primary/40 hover:bg-card cursor-pointer"
-                }`}
-            >
-              <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors
-                ${genre.disabled
-                  ? "bg-muted/50 text-muted-foreground/50"
-                  : "bg-primary/10 text-primary group-hover:bg-primary/20"
-                }`}
-              >
-                <IconComponent className="w-5 h-5" />
-              </div>
+      {!isLoadingGenres && (
+        <>
+          <div className="flex flex-col gap-3">
+            {topOptions.map(renderGenreButton)}
+          </div>
 
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-foreground">{genre.label}</p>
-                <p className="text-xs text-muted-foreground">{genre.description}</p>
-              </div>
+          <motion.div variants={itemVariants} className="mt-7 mb-3 px-1">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Genres</p>
+          </motion.div>
 
-              {genre.disabled && (
-                <Lock className="w-4 h-4 text-muted-foreground/50 shrink-0" />
-              )}
-            </motion.button>
-          );
-        })}
-      </div>
+          <div className="flex flex-col gap-3">
+            {presetGenres.map(renderGenreButton)}
+          </div>
+        </>
+      )}
+
+      {isLoadingGenres && (
+        <motion.div variants={itemVariants} className="text-center py-8 text-sm text-muted-foreground">
+          Loading genres...
+        </motion.div>
+      )}
     </motion.div>
   );
 }

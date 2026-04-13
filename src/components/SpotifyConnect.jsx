@@ -22,7 +22,7 @@ export default function SpotifyConnect({ onUsePreview }) {
           Choose Your Play Mode
         </h2>
         <p className="text-muted-foreground text-sm leading-relaxed">
-          Continue with Spotify Premium for live track lookup, or use local Spotify preview clips without signing in.
+          Continue with Spotify Premium to play your favorite tracks or use local playlists without signing in.
         </p>
       </div>
 
@@ -40,7 +40,7 @@ export default function SpotifyConnect({ onUsePreview }) {
         onClick={onUsePreview}
         className="w-full h-12 rounded-full font-semibold text-base"
       >
-        Use Spotify Preview Clips
+        Use Local Playlists
       </Button>
 
       {clientIdMissing && (
@@ -63,10 +63,6 @@ export default function SpotifyConnect({ onUsePreview }) {
           </ol>
         </div>
       )}
-
-      <p className="text-xs text-muted-foreground/60">
-        Premium mode finds live tracks. Preview mode uses the app's local clip catalog.
-      </p>
     </motion.div>
   );
 }
