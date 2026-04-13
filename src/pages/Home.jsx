@@ -20,9 +20,7 @@ export default function Home() {
           transition={{ type: "spring", duration: 0.8 }}
           className="mb-8"
         >
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-2xl shadow-primary/30">
-            <Music className="w-12 h-12 text-primary-foreground" />
-          </div>
+          <img src="./logoTRNS.png" alt="SoundSnap Logo" className="w-24 h-24 md:w-32 md:h-32" />
         </motion.div>
 
         {/* Title */}

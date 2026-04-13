@@ -338,23 +338,26 @@ export default function Game() {
 
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Header */}
-        <header className="flex items-center justify-between px-6 py-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => {
-              handleDisconnect();
-              navigate("/", { replace: true });
-            }}
-            className="rounded-full text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <div className="flex items-center gap-2">
-            <Music className="w-4 h-4 text-primary" />
-            <span className="font-heading font-semibold text-sm text-foreground">SoundSnap</span>
+        <header className="relative flex items-center justify-between px-6 py-4">
+          <div className="flex-1 flex justify-start z-10">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                handleDisconnect();
+                navigate("/", { replace: true });
+              }}
+              className="rounded-full text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
           </div>
-          <div className="flex items-center gap-2">
+          
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none z-0">
+            <img src="./logoTRNS.png" alt="Logo" className="w-8 h-8" />
+          </div>
+
+          <div className="flex-1 flex items-center justify-end gap-2 z-10">
             {connected && setupComplete && (
               <>
                 <div className="flex items-center gap-1.5 bg-card/50 backdrop-blur border border-border/50 rounded-full px-3 py-1.5">
