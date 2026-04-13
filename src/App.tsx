@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { HashRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import Game from './pages/Game'
 import SpotifyCallback from './pages/SpotifyCallback'
@@ -9,14 +9,14 @@ function App() {
   const isSpotifyCallback = params.has('code') || params.has('error')
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={isSpotifyCallback ? <SpotifyCallback /> : <Home />} />
         <Route path="/play" element={<Game />} />
         <Route path="/callback" element={<SpotifyCallback />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
 

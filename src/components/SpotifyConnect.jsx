@@ -5,7 +5,7 @@ import { initiateSpotifyLogin, hasClientId } from "../lib/spotify";
 
 export default function SpotifyConnect({ onUsePreview }) {
   const clientIdMissing = !hasClientId();
-  const redirectUri = import.meta.env.VITE_SPOTIFY_REDIRECT_URI || "https://localhost:4202/callback";
+  const redirectUri = import.meta.env.VITE_SPOTIFY_REDIRECT_URI || new URL(import.meta.env.BASE_URL, window.location.origin).toString();
 
   return (
     <motion.div
