@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { User, Shuffle, Wrench, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { truncateName } from "@/lib/utils";
 
 const containerVariants = {
   hidden: {},
@@ -202,7 +203,7 @@ export default function TeamSetup({ players, onStart, onBack }) {
           <div className={`grid gap-3 ${resolvedTeams.length > 2 ? "grid-cols-3" : "grid-cols-2"}`}>
             {resolvedTeams.map((team, idx) => (
               <div key={`custom-team-${idx}`} className="rounded-xl border border-border/50 bg-card/40 p-3">
-                <p className="text-xs font-semibold text-primary mb-1">{team.name || "Unassigned team"}</p>
+                <p className="text-xs font-semibold text-primary mb-1">{truncateName(team.name) || "Unassigned team"}</p>
                 {team.players.length > 0 ? (
                   team.players.map((p) => (
                     <p key={p} className="text-xs text-muted-foreground">{p}</p>
@@ -326,7 +327,7 @@ export default function TeamSetup({ players, onStart, onBack }) {
           <div className={`grid gap-3 ${resolvedTeams.length > 2 ? "grid-cols-3" : "grid-cols-2"}`}>
             {resolvedTeams.map((team) => (
               <div key={team.name} className="rounded-xl border border-border/50 bg-card/40 p-3">
-                <p className="text-xs font-semibold text-primary mb-1">{team.name}</p>
+                <p className="text-xs font-semibold text-primary mb-1">{truncateName(team.name)}</p>
                 {team.players.map((p) => (
                   <p key={p} className="text-xs text-muted-foreground">{p}</p>
                 ))}

@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Check, ArrowRight, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function ScoreAssign({ song, teamName, onConfirm }) {
+export default function ScoreAssign({ song, teamName, nextTeamName, onConfirm }) {
   const [gotTitle, setGotTitle] = useState(false);
   const [gotArtist, setGotArtist] = useState(false);
   const [gotYear, setGotYear] = useState(false);
@@ -84,7 +84,7 @@ export default function ScoreAssign({ song, teamName, onConfirm }) {
         onClick={() => onConfirm(points.total)}
         className="w-full h-14 text-lg font-heading font-semibold bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity rounded-xl"
       >
-        Confirm &amp; Next Song
+        {nextTeamName ? `Next song for ${nextTeamName}` : "Confirm & Next Song"}
         <ArrowRight className="w-5 h-5 ml-2" />
       </Button>
     </motion.div>

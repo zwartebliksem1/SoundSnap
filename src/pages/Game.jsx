@@ -12,6 +12,8 @@ import PlayerSetup from "../components/PlayerSetup";
 import TeamSetup from "../components/TeamSetup";
 import ScoreAssign from "../components/ScoreAssign";
 import { getRandomSong } from "../lib/songData";
+import { getPlayedSongIds, addPlayedSongId, localSongId } from "../lib/playedSongs";
+import { truncateName } from "../lib/utils";
 import {
   isConnected,
   searchTrackPreview,
@@ -128,7 +130,7 @@ export default function Game() {
 
     try {
       if (playMode === "preview") {
-        const { song, index } = await getRandomSong(playedIndices, selectedGenre);
+        const { song, index } = await getRandomSong(playedIndices, selectedGenre, getPlayedSongIds());
         if (loadIdRef.current !== thisLoadId) return;
         setCurrentSong(song);
         setPlayedIndices((prev) => [...prev, index]);
@@ -255,6 +257,9 @@ export default function Game() {
   };
 
   const handleNextSong = () => {
+    if (currentSong && playMode === "preview") {
+      addPlayedSongId(localSongId(currentSong));
+    }
     if (teams.length > 0) {
       const nextTurn = currentTurnIndex + 1;
       if (nextTurn >= teamPlayOrder.length) {
@@ -465,7 +470,7 @@ export default function Game() {
                   First Up
                 </p>
                 <h2 className="font-heading text-3xl font-bold text-foreground mb-3">
-                  {currentTeam.name}
+                  {truncateName(currentTeam.name)}
                 </h2>
                 <p className="text-sm text-muted-foreground">
                   Get ready...
@@ -486,7 +491,7 @@ export default function Game() {
                   <div className="text-center mb-4">
                     <span className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-4 py-1.5 text-sm font-medium text-primary">
                       <Users className="w-4 h-4" />
-                      {currentTeam.name.endsWith("'s Team") ? currentTeam.name : `${currentTeam.name}'s`} turn
+                      {truncateName(currentTeam.name.endsWith("'s Team") ? currentTeam.name : `${currentTeam.name}'s`)} turn
                     </span>
                   </div>
                 )}
@@ -574,7 +579,7 @@ export default function Game() {
                   <div className="text-center mb-4">
                     <span className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-4 py-1.5 text-sm font-medium text-primary">
                       <Users className="w-4 h-4" />
-                      {currentTeam.name}
+                      {truncateName(currentTeam.name)}
                     </span>
                   </div>
                 )}
@@ -595,10 +600,15 @@ export default function Game() {
                 exit={{ opacity: 0 }}
                 className="w-full max-w-md mx-auto"
               >
-                <ScoreAssign
+<ScoreAssign
                   key={`scoring-${songsPlayed}`}
                   song={currentSong}
-                  teamName={currentTeam.name}
+                  teamName={truncateName(currentTeam.name)}
+                  nextTeamName={(() => {
+                    const nextTurn = currentTurnIndex + 1;
+                    if (nextTurn >= teamPlayOrder.length) return null;
+                    return truncateName(teams[teamPlayOrder[nextTurn]]?.name ?? null);
+                  })()}
                   onConfirm={handleScoreConfirm}
                 />
               </motion.div>
@@ -623,7 +633,7 @@ export default function Game() {
                     <Trophy className="w-10 h-10 text-primary" />
                   </div>
                   <h2 className="font-heading text-3xl font-bold text-foreground mb-2">
-                    {isTie ? "It's a tie!" : `${winners[0].name} wins!`}
+                    {isTie ? "It's a tie!" : `${truncateName(winners[0].name)} wins!`}
                   </h2>
                   <p className="text-muted-foreground mb-8">
                     {totalGameSongs} songs played &middot; {topScore} point{topScore !== 1 ? "s" : ""}
@@ -652,7 +662,7 @@ export default function Game() {
                               <p className={`text-sm font-semibold ${
                                 isWinner ? "text-primary" : "text-foreground"
                               }`}>
-                                {team.name}{isWinner && " 🏆"}
+                                {truncateName(team.name)}{isWinner && " 🏆"}
                               </p>
                               <p className="text-xs text-muted-foreground">{team.players.join(", ")}</p>
                             </div>

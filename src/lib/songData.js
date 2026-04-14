@@ -36,25 +36,34 @@ export async function getPlaylists() {
  *
  * @param {number[]} excludeIndices  - indices already played (into the filtered pool)
  * @param {string|string[]|null} playlists - playlist id(s) to filter by, or null/"mix" for all songs
+ * @param {string[]} excludeSongIds - cross-session song IDs to exclude (format: "title|artist")
  * @returns {Promise<{ song: object, index: number }>}
  */
-export async function getRandomSong(excludeIndices = [], playlists = null) {
+export async function getRandomSong(excludeIndices = [], playlists = null, excludeSongIds = []) {
   const data = await loadData();
   let pool = data.songs;
 
-  // Filter by playlist(s) — deduplicate automatically since we iterate the
-  // flat songs array and a song appears only once even if tagged in multiple
-  // selected playlists.
+  // Filter by playlist(s)
   if (playlists && playlists !== "mix") {
     const ids = Array.isArray(playlists) ? playlists : [playlists];
     pool = pool.filter((s) => s.playlists.some((p) => ids.includes(p)));
   }
 
+  const excludeIdSet = new Set(excludeSongIds);
+
   const available = pool
     .map((song, i) => ({ song, index: i }))
-    .filter(({ index }) => !excludeIndices.includes(index));
+    .filter(({ song, index }) =>
+      !excludeIndices.includes(index) &&
+      !excludeIdSet.has(`${song.title}|${song.artist}`)
+    );
 
-  const source = available.length ? available : pool.map((song, i) => ({ song, index: i }));
+  // Fall back to only session exclusions if all songs are globally played
+  const sessionAvailable = available.length
+    ? available
+    : pool.map((song, i) => ({ song, index: i })).filter(({ index }) => !excludeIndices.includes(index));
+
+  const source = sessionAvailable.length ? sessionAvailable : pool.map((song, i) => ({ song, index: i }));
   if (!source.length) return { song: pool[0], index: 0 };
 
   const pick = source[Math.floor(Math.random() * source.length)];

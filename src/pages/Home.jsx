@@ -1,10 +1,18 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Music, Headphones, Sparkles } from "lucide-react";
+import { Music, Headphones, Sparkles, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import ParticleBackground from "../components/ParticleBackground";
+import { clearPlayedSongs, getPlayedSongCount } from "../lib/playedSongs";
 
 export default function Home() {
+  const [playedCount, setPlayedCount] = useState(() => getPlayedSongCount());
+
+  const handleClearHistory = () => {
+    clearPlayedSongs();
+    setPlayedCount(0);
+  };
   return (
     <div className="min-h-screen relative overflow-hidden">
       <ParticleBackground />
@@ -76,12 +84,33 @@ export default function Home() {
           </Link>
         </motion.div>
 
+        {/* Played history */}
+        {playedCount > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.1 }}
+            className="mt-8 flex items-center gap-3 text-sm text-muted-foreground"
+          >
+            <span>{playedCount} song{playedCount !== 1 ? "s" : ""} played</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleClearHistory}
+              className="h-7 px-2 gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+            >
+              <RotateCcw className="w-3 h-3" />
+              Clear history
+            </Button>
+          </motion.div>
+        )}
+
         {/* Footer note */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2 }}
-          className="mt-16 text-xs text-muted-foreground/50"
+          className="mt-8 text-xs text-muted-foreground/50"
         >
           Powered by Spotify
         </motion.p>
