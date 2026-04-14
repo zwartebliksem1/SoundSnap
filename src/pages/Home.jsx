@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import ParticleBackground from "../components/ParticleBackground";
 import { clearPlayedSongs, getPlayedSongCount } from "../lib/playedSongs";
+import { useAppSettings } from "../lib/appSettings";
 
 export default function Home() {
+  const { t } = useAppSettings();
   const [playedCount, setPlayedCount] = useState(() => getPlayedSongCount());
 
   const handleClearHistory = () => {
@@ -53,7 +55,7 @@ export default function Home() {
           transition={{ delay: 0.5 }}
           className="text-lg md:text-xl text-muted-foreground text-center max-w-md mb-12 font-light"
         >
-          Listen to a 30-second clip. Can you name the song?
+          {t("homeSubtitle")}
         </motion.p>
 
         {/* Features */}
@@ -63,9 +65,9 @@ export default function Home() {
           transition={{ delay: 0.7 }}
           className="flex gap-8 mb-12"
         >
-          <Feature icon={Headphones} text="Listen" />
-          <Feature icon={Sparkles} text="Guess" />
-          <Feature icon={Music} text="Discover" />
+          <Feature icon={Headphones} text={t("featureListen")} />
+          <Feature icon={Sparkles} text={t("featureGuess")} />
+          <Feature icon={Music} text={t("featureDiscover")} />
         </motion.div>
 
         {/* CTA */}
@@ -79,7 +81,7 @@ export default function Home() {
               size="lg"
               className="h-16 px-12 text-lg font-heading font-semibold rounded-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all shadow-xl shadow-primary/30 animate-pulse-glow"
             >
-              Start Playing
+              {t("startPlaying")}
             </Button>
           </Link>
         </motion.div>
@@ -92,7 +94,7 @@ export default function Home() {
             transition={{ delay: 1.1 }}
             className="mt-8 flex items-center gap-3 text-sm text-muted-foreground"
           >
-            <span>{playedCount} song{playedCount !== 1 ? "s" : ""} played</span>
+            <span>{t("songsPlayedCount", { count: playedCount, suffix: playedCount !== 1 ? "s" : "" })}</span>
             <Button
               variant="ghost"
               size="sm"
@@ -100,7 +102,7 @@ export default function Home() {
               className="h-7 px-2 gap-1.5 text-xs text-muted-foreground hover:text-foreground"
             >
               <RotateCcw className="w-3 h-3" />
-              Clear history
+              {t("clearHistory")}
             </Button>
           </motion.div>
         )}
@@ -112,7 +114,7 @@ export default function Home() {
           transition={{ delay: 1.2 }}
           className="mt-8 text-xs text-muted-foreground/50"
         >
-          Powered by Spotify
+          {t("poweredBySpotify")}
         </motion.p>
       </div>
     </div>

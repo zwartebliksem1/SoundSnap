@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
 import { Disc3, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAppSettings } from "@/lib/appSettings";
 
 export default function SongReveal({ song, onNextSong, hasTeams, onGoToScoring }) {
+  const { t } = useAppSettings();
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -47,8 +49,8 @@ export default function SongReveal({ song, onNextSong, hasTeams, onGoToScoring }
         transition={{ delay: 0.6 }}
         className="grid grid-cols-2 gap-4 w-full"
       >
-        <DetailCard icon={Disc3} label="Album" value={song.album} />
-        <DetailCard icon={Calendar} label="Year" value={song.year} />
+        <DetailCard icon={Disc3} label={t("album")} value={song.album} />
+        <DetailCard icon={Calendar} label={t("year")} value={song.year} />
       </motion.div>
 
       {/* Action Button */}
@@ -63,14 +65,14 @@ export default function SongReveal({ song, onNextSong, hasTeams, onGoToScoring }
             onClick={onGoToScoring}
             className="w-full h-14 text-lg font-heading font-semibold bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity rounded-xl"
           >
-            Assign Points
+            {t("assignPoints")}
           </Button>
         ) : (
           <Button
             onClick={onNextSong}
             className="w-full h-14 text-lg font-heading font-semibold bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity rounded-xl"
           >
-            Play Next Song
+            {t("playNextSong")}
           </Button>
         )}
       </motion.div>

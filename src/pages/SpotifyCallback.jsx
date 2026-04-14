@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { exchangeCodeForToken } from "../lib/spotify";
+import { useAppSettings } from "../lib/appSettings";
 
 export default function SpotifyCallback() {
   const navigate = useNavigate();
+  const { t } = useAppSettings();
   const [error, setError] = useState(null);
   const hasHandledCallback = useRef(false);
 
@@ -24,7 +26,7 @@ export default function SpotifyCallback() {
     }
 
     if (err) {
-      setError("Spotify authorization was denied.");
+      setError(t("spotifyDenied"));
       return;
     }
 
@@ -44,7 +46,7 @@ export default function SpotifyCallback() {
         <div>
           <p className="text-destructive font-medium mb-4">{error}</p>
           <button onClick={() => navigate("/")} className="text-sm text-muted-foreground underline">
-            Go back home
+            {t("goBackHome")}
           </button>
         </div>
       </div>
@@ -55,7 +57,7 @@ export default function SpotifyCallback() {
     <div className="min-h-screen flex items-center justify-center">
       <div className="flex flex-col items-center gap-3">
         <div className="w-8 h-8 border-4 border-muted border-t-[#1DB954] rounded-full animate-spin" />
-        <p className="text-sm text-muted-foreground">Connecting to Spotify...</p>
+        <p className="text-sm text-muted-foreground">{t("connectingSpotify")}</p>
       </div>
     </div>
   );

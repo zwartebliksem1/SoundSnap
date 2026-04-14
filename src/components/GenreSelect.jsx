@@ -4,6 +4,7 @@ import { Shuffle, List, Disc2, Zap, Flag, Lock, Unlock, ArrowLeft, Check, Flame,
 import { getPlaylists, getSongCount } from "../lib/songData";
 import { getAvailableTokens, spendToken, unlockPlaylist, isUnlocked } from "../lib/unlocks";
 import { Toast } from "@capacitor/toast";
+import { useAppSettings } from "@/lib/appSettings";
 
 const ICON_MAP = {
   oldies: Disc2,
@@ -36,6 +37,7 @@ const itemVariants = {
 const MAX_LISTS = 5;
 
 export default function GenreSelect({ onSelect }) {
+  const { t } = useAppSettings();
   const [view, setView] = useState("main"); // "main" | "lists"
   const [availablePlaylists, setAvailablePlaylists] = useState([]);
   const [selected, setSelected] = useState([]);
@@ -70,16 +72,16 @@ export default function GenreSelect({ onSelect }) {
   const topOptions = [
     {
       id: "mix",
-      label: "Mix everything",
-      description: "All genres shuffled together",
+      label: t("mixEverything"),
+      description: t("allGenresShuffled"),
       songCount: counts.mix ?? 0,
       icon: Shuffle,
       disabled: false,
     },
     {
       id: "lists",
-      label: "Select lists",
-      description: "Choose your own playlists",
+      label: t("selectLists"),
+      description: t("chooseYourPlaylists"),
       icon: List,
       disabled: false,
     },
@@ -100,7 +102,7 @@ export default function GenreSelect({ onSelect }) {
     // Fallback Mock Purchase for MVP:
     unlockPlaylist(id);
     setShowUnlockModal(null);
-    await Toast.show({ text: "Playlist unlocked via Native Purchase Dialog!" });
+    await Toast.show({ text: t("unlockPlaylist") });
   };
 
   const handleUnlockWithTokens = async (id) => {
@@ -108,18 +110,27 @@ export default function GenreSelect({ onSelect }) {
       spendToken();
       unlockPlaylist(id);
       setShowUnlockModal(null);
-      await Toast.show({ text: "Playlist unlocked with 50 completed games!" });
+      await Toast.show({ text: t("unlockPlaylist") });
     } else {
-      await Toast.show({ text: "Not enough games played! Keep playing to unlock." });
+      await Toast.show({ text: t("tokenEarnInfo") });
     }
+  };
+
+  const localizedPlaylistText = (playlist, field) => {
+    const key = `playlist_${playlist.id}_${field}`;
+    const translated = t(key);
+    if (translated === key) {
+      return field === "label" ? playlist.label : playlist.description;
+    }
+    return translated;
   };
 
   const presetGenres = availablePlaylists.map((p) => {
     const unlocked = isUnlocked(p.id);
     return {
       id: p.id,
-      label: p.label,
-      description: p.description,
+      label: localizedPlaylistText(p, "label"),
+      description: localizedPlaylistText(p, "description"),
       songCount: counts[p.id] ?? 0,
       icon: ICON_MAP[p.id] || Disc2,
       disabled: !unlocked,
@@ -177,7 +188,7 @@ export default function GenreSelect({ onSelect }) {
 
         {typeof genre.songCount === "number" && !genre.disabled && (
           <span className="shrink-0 text-xs font-medium text-muted-foreground">
-            {genre.songCount} songs
+            {genre.songCount} {t("songs")}
           </span>
         )}
 
@@ -206,10 +217,10 @@ export default function GenreSelect({ onSelect }) {
           </button>
           <div>
             <h2 className="font-heading text-2xl font-bold text-foreground">
-              Select playlists
+              {t("selectPlaylists")}
             </h2>
             <p className="text-sm text-muted-foreground">
-              Pick up to {MAX_LISTS} ({selected.length}/{MAX_LISTS})
+              {t("pickUpTo", { max: MAX_LISTS, count: selected.length })}
             </p>
           </div>
         </motion.div>
@@ -248,12 +259,12 @@ export default function GenreSelect({ onSelect }) {
                   {isSelected ? <Check className="w-5 h-5" /> : <IconComponent className="w-5 h-5" />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground">{pl.label}</p>
-                  <p className="text-xs text-muted-foreground">{pl.description}</p>
+                  <p className="text-sm font-semibold text-foreground">{localizedPlaylistText(pl, "label")}</p>
+                  <p className="text-xs text-muted-foreground">{localizedPlaylistText(pl, "description")}</p>
                 </div>
                 {isUnlockedPlaylist ? (
                   <span className="shrink-0 text-xs font-medium text-muted-foreground">
-                    {counts[pl.id] ?? 0} songs
+                    {counts[pl.id] ?? 0} {t("songs")}
                   </span>
                 ) : (
                   <Lock className="w-4 h-4 text-muted-foreground/50 shrink-0" />
@@ -273,7 +284,7 @@ export default function GenreSelect({ onSelect }) {
                 : "bg-muted text-muted-foreground cursor-not-allowed"
               }`}
           >
-            Start with {selected.length} playlist{selected.length !== 1 ? "s" : ""}
+            {t("startWithPlaylists", { count: selected.length, suffix: selected.length !== 1 ? "s" : "" })}
           </button>
         </motion.div>
       </motion.div>
@@ -290,10 +301,10 @@ export default function GenreSelect({ onSelect }) {
     >
       <motion.div variants={itemVariants} className="text-center mb-8">
         <h2 className="font-heading text-2xl font-bold text-foreground mb-2">
-          Pick a genre
+          {t("pickGenre")}
         </h2>
         <p className="text-sm text-muted-foreground">
-          What do you want to listen to?
+          {t("whatListen")}
         </p>
       </motion.div>
 
@@ -304,7 +315,7 @@ export default function GenreSelect({ onSelect }) {
           </div>
 
           <motion.div variants={itemVariants} className="mt-7 mb-3 px-1">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Genres</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("genres")}</p>
           </motion.div>
 
           <div className="flex flex-col gap-3">
@@ -315,7 +326,7 @@ export default function GenreSelect({ onSelect }) {
 
       {isLoadingGenres && (
         <motion.div variants={itemVariants} className="text-center py-8 text-sm text-muted-foreground">
-          Loading genres...
+          {t("loadingGenres")}
         </motion.div>
       )}
 
@@ -334,12 +345,12 @@ export default function GenreSelect({ onSelect }) {
               </button>
             </div>
             
-            <h3 className="font-heading text-xl font-bold mb-2">Unlock Playlist</h3>
+            <h3 className="font-heading text-xl font-bold mb-2">{t("unlockPlaylist")}</h3>
             <p className="text-sm text-muted-foreground mb-6">
-              You can unlock this playlist permanently by spending an unlock token, or purchasing it directly. 
+              {t("unlockPlaylistDesc")}
               <br/><br/>
-              <b>Available Tokens: {getAvailableTokens()}</b><br/>
-              <span className="text-xs">(1 token earned every 50 completed games)</span>
+              <b>{t("availableTokens", { count: getAvailableTokens() })}</b><br/>
+              <span className="text-xs">{t("tokenEarnInfo")}</span>
             </p>
 
             <div className="flex flex-col gap-3">
@@ -347,14 +358,14 @@ export default function GenreSelect({ onSelect }) {
                 onClick={() => handleUnlockWithTokens(showUnlockModal)}
                 className="w-full py-4 px-5 rounded-2xl bg-secondary/30 border border-secondary text-secondary-foreground font-semibold hover:bg-secondary/40 transition-colors"
               >
-                Use 1 Token
+                {t("useToken")}
               </button>
               
               <button
                 onClick={() => handlePurchase(showUnlockModal)}
                 className="w-full py-4 px-5 rounded-2xl bg-gradient-to-r from-primary to-accent text-white font-semibold shadow-lg shadow-primary/20 hover:opacity-90 transition-all"
               >
-                Purchase for €2.50
+                {t("purchasePrice")}
               </button>
             </div>
           </motion.div>

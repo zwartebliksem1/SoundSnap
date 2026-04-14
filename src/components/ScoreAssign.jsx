@@ -2,8 +2,10 @@ import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Check, ArrowRight, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAppSettings } from "@/lib/appSettings";
 
 export default function ScoreAssign({ song, teamName, nextTeamName, onConfirm }) {
+  const { t } = useAppSettings();
   const [gotTitle, setGotTitle] = useState(false);
   const [gotArtist, setGotArtist] = useState(false);
   const [gotYear, setGotYear] = useState(false);
@@ -38,7 +40,7 @@ export default function ScoreAssign({ song, teamName, nextTeamName, onConfirm })
       {/* Song recap (compact) */}
       <div className="text-center">
         <h2 className="font-heading text-2xl font-bold text-foreground mb-1">
-          Assign Points
+          {t("assignPoints")}
         </h2>
         <p className="text-sm text-muted-foreground">
           <span className="text-foreground font-medium">{song.title}</span>
@@ -53,11 +55,11 @@ export default function ScoreAssign({ song, teamName, nextTeamName, onConfirm })
       {/* Toggles */}
       <div className="w-full space-y-3">
         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground text-center">
-          Tap what they guessed correctly
+          {t("tapCorrect")}
         </p>
 
-        <ScoreToggle label="Title" sublabel="+1 point" active={gotTitle} onToggle={() => setGotTitle((v) => !v)} />
-        <ScoreToggle label="Artist" sublabel="+1 point" active={gotArtist} onToggle={() => setGotArtist((v) => !v)} />
+        <ScoreToggle label={t("title")} sublabel={`+1 ${t("point")}`} active={gotTitle} onToggle={() => setGotTitle((v) => !v)} />
+        <ScoreToggle label={t("artist")} sublabel={`+1 ${t("point")}`} active={gotArtist} onToggle={() => setGotArtist((v) => !v)} />
 
         {gotTitle && gotArtist && (
           <motion.div
@@ -65,17 +67,17 @@ export default function ScoreAssign({ song, teamName, nextTeamName, onConfirm })
             animate={{ opacity: 1, height: "auto" }}
             className="text-center text-xs text-primary font-medium"
           >
-            +1 bonus for getting both!
+            {t("bonusBoth")}
           </motion.div>
         )}
 
-        <ScoreToggle label="Year" sublabel="+3 points" active={gotYear} onToggle={() => setGotYear((v) => !v)} />
+        <ScoreToggle label={t("year")} sublabel={`+3 ${t("points")}`} active={gotYear} onToggle={() => setGotYear((v) => !v)} />
       </div>
 
       {/* Total */}
       <div className="text-center">
         <p className="text-lg font-heading font-bold text-foreground">
-          Total: <span className="text-primary">{points.total}</span> point{points.total !== 1 ? "s" : ""}
+          {t("totalLabel")} <span className="text-primary">{points.total}</span> {points.total !== 1 ? t("points") : t("point")}
         </p>
       </div>
 
@@ -84,7 +86,7 @@ export default function ScoreAssign({ song, teamName, nextTeamName, onConfirm })
         onClick={() => onConfirm(points.total)}
         className="w-full h-14 text-lg font-heading font-semibold bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity rounded-xl"
       >
-        {nextTeamName ? `Next song for ${nextTeamName}` : "Confirm & Next Song"}
+        {nextTeamName ? t("nextSongFor", { name: nextTeamName }) : t("confirmNextSong")}
         <ArrowRight className="w-5 h-5 ml-2" />
       </Button>
     </motion.div>

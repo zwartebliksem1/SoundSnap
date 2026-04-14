@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { UserPlus, X, Users, ArrowRight, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAppSettings } from "@/lib/appSettings";
 
 const STORAGE_KEY = "soundsnap_players";
 
@@ -36,6 +37,7 @@ const itemVariants = {
 };
 
 export default function PlayerSetup({ onContinueWithoutPlayers, onNext }) {
+  const { t } = useAppSettings();
   const [names, setNames] = useState([""]);
   const [remembered, setRemembered] = useState(null);
 
@@ -84,10 +86,10 @@ export default function PlayerSetup({ onContinueWithoutPlayers, onNext }) {
           <Users className="w-8 h-8 text-primary" />
         </div>
         <h2 className="font-heading text-2xl font-bold text-foreground mb-2">
-          Add Players
+          {t("addPlayers")}
         </h2>
         <p className="text-sm text-muted-foreground">
-          Playing with friends? Add their names to keep score.
+          {t("playersIntro")}
         </p>
       </motion.div>
 
@@ -98,12 +100,12 @@ export default function PlayerSetup({ onContinueWithoutPlayers, onNext }) {
           className="mb-4 rounded-xl border border-primary/30 bg-primary/5 backdrop-blur px-5 py-4"
         >
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium text-foreground">Previous players</p>
+            <p className="text-sm font-medium text-foreground">{t("previousPlayers")}</p>
             <button
               onClick={dismissRemembered}
               className="text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
-              Dismiss
+              {t("dismiss")}
             </button>
           </div>
           <p className="text-xs text-muted-foreground mb-3">{remembered.join(", ")}</p>
@@ -114,7 +116,7 @@ export default function PlayerSetup({ onContinueWithoutPlayers, onNext }) {
             className="rounded-full text-xs h-8"
           >
             <RotateCcw className="w-3 h-3 mr-1.5" />
-            Use these players
+            {t("useThesePlayers")}
           </Button>
         </motion.div>
       )}
@@ -127,7 +129,7 @@ export default function PlayerSetup({ onContinueWithoutPlayers, onNext }) {
               value={name}
               onChange={(e) => updateName(i, e.target.value)}
               onKeyDown={(e) => handleKeyDown(e, i)}
-              placeholder="Add name"
+              placeholder={t("addName")}
               className="flex-1 h-12 rounded-xl border border-border bg-card/60 backdrop-blur px-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/40 transition-colors"
             />
             {names.length > 1 && (
@@ -150,7 +152,7 @@ export default function PlayerSetup({ onContinueWithoutPlayers, onNext }) {
           className="flex items-center gap-2 w-full rounded-xl border border-dashed border-border hover:border-primary/40 px-5 py-3 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
         >
           <UserPlus className="w-4 h-4" />
-          Add another player
+          {t("addAnotherPlayer")}
         </button>
       </motion.div>
       </div>
@@ -164,7 +166,7 @@ export default function PlayerSetup({ onContinueWithoutPlayers, onNext }) {
           }}
           className="w-full h-12 rounded-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all font-semibold text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:opacity-50"
         >
-          Next
+          {t("next")}
           <ArrowRight className="w-4 h-4 ml-2" />
         </Button>
         <Button
@@ -172,7 +174,7 @@ export default function PlayerSetup({ onContinueWithoutPlayers, onNext }) {
           onClick={onContinueWithoutPlayers}
           className="w-full h-12 rounded-full font-semibold text-base"
         >
-          Continue without players
+          {t("continueWithoutPlayers")}
         </Button>
       </motion.div>
     </motion.div>

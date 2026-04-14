@@ -14,6 +14,7 @@ import ScoreAssign from "../components/ScoreAssign";
 import { getRandomSong } from "../lib/songData";
 import { getPlayedSongIds, addPlayedSongId, localSongId } from "../lib/playedSongs";
 import { truncateName } from "../lib/utils";
+import { useAppSettings } from "../lib/appSettings";
 import {
   isConnected,
   searchTrackPreview,
@@ -29,6 +30,7 @@ import { incrementGamesPlayed } from "../lib/unlocks";
 
 export default function Game() {
   const navigate = useNavigate();
+  const { cachePlayedSongs, t } = useAppSettings();
   const [connected, setConnected] = useState(true);
   const [playMode, setPlayMode] = useState("preview");
   const [phase, setPhase] = useState("playing");
@@ -104,7 +106,7 @@ export default function Game() {
 
       if (!playlists.length) {
         setSelectedSpotifyPlaylistId("");
-        setPlaylistError("No playlists found on this Spotify account.");
+        setPlaylistError(t("noPlaylistsFound"));
         return;
       }
 
@@ -115,11 +117,11 @@ export default function Game() {
     } catch (error) {
       setSpotifyPlaylists([]);
       setSelectedSpotifyPlaylistId("");
-      setPlaylistError(error?.message || "Could not load Spotify playlists.");
+      setPlaylistError(error?.message || t("loadPlaylistsError"));
     } finally {
       setIsLoadingPlaylists(false);
     }
-  }, [connected, playMode, selectedSpotifyPlaylistId]);
+  }, [connected, playMode, selectedSpotifyPlaylistId, t]);
 
   const loadSong = useCallback(async (overridePlaylistId = null) => {
     const thisLoadId = ++loadIdRef.current;
@@ -130,7 +132,11 @@ export default function Game() {
 
     try {
       if (playMode === "preview") {
-        const { song, index } = await getRandomSong(playedIndices, selectedGenre, getPlayedSongIds());
+        const { song, index } = await getRandomSong(
+          playedIndices,
+          selectedGenre,
+          cachePlayedSongs ? getPlayedSongIds() : []
+        );
         if (loadIdRef.current !== thisLoadId) return;
         setCurrentSong(song);
         setPlayedIndices((prev) => [...prev, index]);
@@ -155,7 +161,7 @@ export default function Game() {
           setCurrentSong(null);
           setAudioUrl("");
           if (premiumSource === "playlists") {
-            setPlaylistError("No playable tracks found in this playlist. Try another playlist.");
+            setPlaylistError(t("noPlayableTracks"));
             setNoPreview(false);
           } else {
             setNoPreview(true);
@@ -175,7 +181,11 @@ export default function Game() {
           }
         }
       } else {
-        const { song, index } = await getRandomSong(playedIndices, selectedGenre);
+        const { song, index } = await getRandomSong(
+          playedIndices,
+          selectedGenre,
+          cachePlayedSongs ? getPlayedSongIds() : []
+        );
         if (loadIdRef.current !== thisLoadId) return;
         setCurrentSong(song);
         setPlayedIndices((prev) => [...prev, index]);
@@ -189,7 +199,7 @@ export default function Game() {
         setIsLoading(false);
       }
     }
-  }, [playMode, premiumSource, topTracksPool, pickRandomFromPool, playedIndices, selectedSpotifyPlaylistId, playedTrackIds, selectedGenre]);
+  }, [playMode, premiumSource, topTracksPool, pickRandomFromPool, playedIndices, selectedSpotifyPlaylistId, playedTrackIds, selectedGenre, cachePlayedSongs, t]);
 
   useEffect(() => {
     if (shouldLoadPreviewSong) {
@@ -222,15 +232,15 @@ export default function Game() {
       const pool = await getUserTopTracksPool();
       setTopTracksPool(pool);
       if (!pool.length) {
-        setTopTracksError("No top tracks found for this Spotify account.");
+        setTopTracksError(t("noTopTracksFound"));
       }
     } catch (error) {
       setTopTracksPool([]);
-      setTopTracksError(error?.message || "Could not load your top songs.");
+      setTopTracksError(error?.message || t("loadTopSongsError"));
     } finally {
       setIsLoadingTopTracks(false);
     }
-  }, [connected, playMode]);
+  }, [connected, playMode, t]);
 
   useEffect(() => {
     if (connected && playMode === "premium" && premiumSource === "playlists") {
@@ -257,7 +267,7 @@ export default function Game() {
   };
 
   const handleNextSong = () => {
-    if (currentSong && playMode === "preview") {
+    if (cachePlayedSongs && currentSong && playMode === "preview") {
       addPlayedSongId(localSongId(currentSong));
     }
     if (teams.length > 0) {
@@ -413,7 +423,7 @@ export default function Game() {
           <div className="flex-1 flex items-center justify-end gap-2 z-10">
             {connected && setupComplete && (
               <div className="flex items-center gap-1.5 bg-card/50 backdrop-blur border border-border/50 rounded-full px-3 py-1.5">
-                <span className="text-xs text-muted-foreground">Song</span>
+                <span className="text-xs text-muted-foreground">{t("songLabel")}</span>
                 <span className="text-sm font-heading font-bold text-primary">{songsPlayed}{totalGameSongs > 0 ? ` / ${totalGameSongs}` : ""}</span>
               </div>
             )}
@@ -467,13 +477,13 @@ export default function Game() {
                   <Users className="w-10 h-10 text-primary" />
                 </div>
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground mb-3">
-                  First Up
+                  {t("firstUp")}
                 </p>
                 <h2 className="font-heading text-3xl font-bold text-foreground mb-3">
                   {truncateName(currentTeam.name)}
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  Get ready...
+                  {t("getReady")}
                 </p>
               </motion.div>
             )}
@@ -491,30 +501,30 @@ export default function Game() {
                   <div className="text-center mb-4">
                     <span className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-4 py-1.5 text-sm font-medium text-primary">
                       <Users className="w-4 h-4" />
-                      {truncateName(currentTeam.name.endsWith("'s Team") ? currentTeam.name : `${currentTeam.name}'s`)} turn
+                      {truncateName(currentTeam.name)} {t("turn")}
                     </span>
                   </div>
                 )}
 
                 <div className="text-center mb-8">
                   <h2 className="font-heading text-2xl font-bold text-foreground mb-2">
-                    {isLoading ? "Finding a song..." : "Listen carefully..."}
+                    {isLoading ? t("findingSong") : t("listenCarefully")}
                   </h2>
                   <p className="text-sm text-muted-foreground">
                     {isLoading
                       ? playMode === "preview"
-                        ? "Loading local preview clip"
-                        : "Searching Spotify"
-                      : "You have 30 seconds to listen"}
+                        ? t("loadingLocalPreview")
+                        : t("searchingSpotify")
+                      : t("thirtySecondsListen")}
                   </p>
                 </div>
 
                 {playMode === "premium" && (
                   <div className="mb-4 text-left">
-                    <p className="text-sm font-medium text-foreground mb-2">Your Top Songs</p>
+                    <p className="text-sm font-medium text-foreground mb-2">{t("yourTopSongs")}</p>
                     <div className="flex items-center justify-between gap-3 mb-2">
                       <p className="text-xs text-muted-foreground">
-                        Loaded: {topTracksPool.length}
+                        {t("loadedCount", { count: topTracksPool.length })}
                       </p>
                       <Button
                         variant="outline"
@@ -522,7 +532,7 @@ export default function Game() {
                         onClick={loadTopTracks}
                         disabled={isLoadingTopTracks}
                       >
-                        Refresh
+                        {t("refresh")}
                       </Button>
                     </div>
 
@@ -535,7 +545,7 @@ export default function Game() {
                           onClick={loadTopTracks}
                           disabled={isLoadingTopTracks}
                         >
-                          Retry
+                          {t("retry")}
                         </Button>
                       </div>
                     )}
@@ -555,11 +565,11 @@ export default function Game() {
                   <div className="mt-6 text-center">
                     <p className="text-sm text-muted-foreground mb-3">
                       {playMode === "preview"
-                        ? "No local Spotify preview clip is saved for this song."
-                        : "No preview clip available in the selected playlist."}
+                        ? t("noLocalPreview")
+                        : t("noPlaylistPreview")}
                     </p>
                     <Button variant="outline" onClick={loadSong} className="rounded-full">
-                      Try Another Song
+                      {t("tryAnotherSong")}
                     </Button>
                   </div>
                 )}
@@ -633,10 +643,14 @@ export default function Game() {
                     <Trophy className="w-10 h-10 text-primary" />
                   </div>
                   <h2 className="font-heading text-3xl font-bold text-foreground mb-2">
-                    {isTie ? "It's a tie!" : `${truncateName(winners[0].name)} wins!`}
+                    {isTie ? t("tie") : t("wins", { name: truncateName(winners[0].name) })}
                   </h2>
                   <p className="text-muted-foreground mb-8">
-                    {totalGameSongs} songs played &middot; {topScore} point{topScore !== 1 ? "s" : ""}
+                    {t("songsPlayedSummary", {
+                      count: totalGameSongs,
+                      points: topScore,
+                      suffix: topScore !== 1 ? "s" : "",
+                    })}
                   </p>
 
                   {/* Scoreboard */}
@@ -684,7 +698,7 @@ export default function Game() {
                     }}
                     className="h-14 px-8 rounded-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all font-heading font-semibold text-lg"
                   >
-                    Back to Home
+                    {t("backToHome")}
                   </Button>
                 </motion.div>
               );
@@ -712,9 +726,9 @@ export default function Game() {
                 transition={{ duration: 0.2 }}
                 className="relative w-full max-w-sm rounded-2xl border border-border bg-card/95 backdrop-blur p-5"
               >
-                <h3 className="font-heading text-xl font-bold text-foreground mb-2">Abandon current game?</h3>
+                <h3 className="font-heading text-xl font-bold text-foreground mb-2">{t("abandonGame")}</h3>
                 <p className="text-sm text-muted-foreground mb-5">
-                  All current progress and scores will be lost.
+                  {t("loseProgress")}
                 </p>
                 <div className="flex gap-3">
                   <Button
@@ -722,13 +736,13 @@ export default function Game() {
                     className="flex-1 rounded-full"
                     onClick={() => setShowLeaveConfirmModal(false)}
                   >
-                    Continue game
+                    {t("continueGame")}
                   </Button>
                   <Button
                     className="flex-1 rounded-full bg-destructive hover:opacity-90"
                     onClick={confirmLeaveGame}
                   >
-                    Leave game
+                    {t("leaveGame")}
                   </Button>
                 </div>
               </motion.div>

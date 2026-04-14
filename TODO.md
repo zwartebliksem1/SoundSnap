@@ -3,3 +3,4 @@
 - [ ] Add paywall for playlists
 - [ ] Add more playlists
 - [ ] Scoreboard
+- [ ] Localization

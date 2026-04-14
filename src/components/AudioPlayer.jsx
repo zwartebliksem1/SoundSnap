@@ -4,12 +4,14 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import VinylDisc from "./VinylDisc";
 import ProgressRing from "./ProgressRing";
+import { useAppSettings } from "@/lib/appSettings";
 
 const PLAY_DURATION = 30; // seconds
 const RING_SIZE = 288;
 const DISC_SIZE = 282;
 
 export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, currentSong, onPlaybackStart, onDevNextSong }) {
+  const { volume, muted, setMuted, t } = useAppSettings();
   const audioRef = useRef(null);
   const timerRef = useRef(null);
   const loadingTimeoutRef = useRef(null);
@@ -100,6 +102,13 @@ export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, c
     };
   }, [isLoading]);
 
+  // Keep the native audio element synced with global sound settings.
+  useEffect(() => {
+    if (!audioRef.current) return;
+    audioRef.current.volume = volume;
+    audioRef.current.muted = muted || volume === 0;
+  }, [volume, muted]);
+
   // Autoplay when a song URL is ready and loading is done
   useEffect(() => {
     if (!audioUrl || isLoading) return;
@@ -114,6 +123,8 @@ export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, c
       if (audioRef.current) {
         audioRef.current.src = audioUrl;
         audioRef.current.currentTime = 0;
+        audioRef.current.volume = volume;
+        audioRef.current.muted = muted || volume === 0;
         audioRef.current.load();
         await new Promise(resolve => setTimeout(resolve, 100));
         audioRef.current.currentTime = 0;
@@ -162,11 +173,14 @@ export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, c
   };
 
   const toggleMute = () => {
-    if (audioRef.current) {
-      audioRef.current.muted = !isMuted;
-    }
-    setIsMuted(!isMuted);
+    const next = !muted;
+    setMuted(next);
+    setIsMuted(next);
   };
+
+  useEffect(() => {
+    setIsMuted(muted || volume === 0);
+  }, [muted, volume]);
 
   return (
     <div className="flex flex-col items-center gap-8">
@@ -203,7 +217,7 @@ export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, c
             animate={{ opacity: 1, scale: 1 }}
             className="font-heading text-2xl font-bold text-primary"
           >
-            Time's up!
+            {t("timeUp")}
           </motion.div>
         )}
       </div>
@@ -249,7 +263,7 @@ export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, c
                 className="h-12 px-5 rounded-full"
                 disabled={!hasStarted}
               >
-                Reveal Now
+                {t("revealNow")}
               </Button>
           </>
         ) : (
@@ -258,7 +272,7 @@ export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, c
             onClick={onTimeUp}
             className="h-14 px-8 rounded-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all font-heading font-semibold text-lg shadow-lg shadow-primary/30"
           >
-            Reveal Song
+            {t("revealSong")}
           </Button>
         )}
           <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
@@ -284,7 +298,7 @@ export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, c
           className="rounded-full h-10 px-4"
         >
           <SkipForward className="w-4 h-4 mr-2" />
-          Next Song (DEV)
+          {t("devNextSong")}
         </Button>
       )}
     </div>
