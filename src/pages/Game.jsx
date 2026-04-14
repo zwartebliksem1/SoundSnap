@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { ArrowLeft, Music, Users, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
@@ -16,6 +16,7 @@ import {
   isConnected,
   searchTrackPreview,
   searchPublicPreviewClip,
+  resolvePreviewClipForLocalSong,
   disconnectSpotify,
   getUserPlaylists,
   getRandomTrackFromPlaylist,
@@ -57,6 +58,7 @@ export default function Game() {
   const [scores, setScores] = useState({});  // { teamName: number }
   const [hasGameplayStarted, setHasGameplayStarted] = useState(false);
   const [showLeaveConfirmModal, setShowLeaveConfirmModal] = useState(false);
+  const loadIdRef = useRef(0);
 
   const currentTeam = teams.length > 0 && teamPlayOrder.length > 0
     ? teams[teamPlayOrder[currentTurnIndex % teamPlayOrder.length]]
@@ -118,6 +120,7 @@ export default function Game() {
   }, [connected, playMode, selectedSpotifyPlaylistId]);
 
   const loadSong = useCallback(async (overridePlaylistId = null) => {
+    const thisLoadId = ++loadIdRef.current;
     setIsLoading(true);
     setPhase("playing");
     setAudioUrl(null);
@@ -126,10 +129,12 @@ export default function Game() {
     try {
       if (playMode === "preview") {
         const { song, index } = await getRandomSong(playedIndices, selectedGenre);
+        if (loadIdRef.current !== thisLoadId) return;
         setCurrentSong(song);
         setPlayedIndices((prev) => [...prev, index]);
 
-        const url = song.previewUrl || await searchPublicPreviewClip(song.title, song.artist);
+        const url = await resolvePreviewClipForLocalSong(song);
+        if (loadIdRef.current !== thisLoadId) return;
         setAudioUrl(url || "");
         setNoPreview(!url);
       } else if (playMode === "premium") {
@@ -141,6 +146,8 @@ export default function Game() {
           const playlistId = overridePlaylistId || selectedSpotifyPlaylistId;
           randomTrack = await getRandomTrackFromPlaylist(playlistId, playedTrackIds);
         }
+
+        if (loadIdRef.current !== thisLoadId) return;
 
         if (!randomTrack) {
           setCurrentSong(null);
@@ -156,6 +163,8 @@ export default function Game() {
           const fallbackUrl = randomTrack.previewUrl
             || await searchPublicPreviewClip(randomTrack.song.title, randomTrack.song.artist);
 
+          if (loadIdRef.current !== thisLoadId) return;
+
           setCurrentSong(randomTrack.song);
           setAudioUrl(fallbackUrl || "");
           setNoPreview(!fallbackUrl);
@@ -165,14 +174,18 @@ export default function Game() {
         }
       } else {
         const { song, index } = await getRandomSong(playedIndices, selectedGenre);
+        if (loadIdRef.current !== thisLoadId) return;
         setCurrentSong(song);
         setPlayedIndices((prev) => [...prev, index]);
         const url = await searchTrackPreview(song.title, song.artist);
+        if (loadIdRef.current !== thisLoadId) return;
         setAudioUrl(url || "");
         setNoPreview(!url);
       }
     } finally {
-      setIsLoading(false);
+      if (loadIdRef.current === thisLoadId) {
+        setIsLoading(false);
+      }
     }
   }, [playMode, premiumSource, topTracksPool, pickRandomFromPool, playedIndices, selectedSpotifyPlaylistId, playedTrackIds, selectedGenre]);
 

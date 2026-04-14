@@ -171,7 +171,7 @@
       "title": "Mr. Brightside",
       "artist": "The Killers",
       "album": "Hot Fuss",
-      "year": 2003,
+      "year": 2004,
       "playlists": ["hits"]
     },
     {
@@ -714,15 +714,8 @@
       "playlists": ["dutch"]
     },
     {
-      "title": "Drank & Drugs",
-      "artist": "Lil Kleine & Ronnie Flex",
-      "album": "New Wave",
-      "year": 2015,
-      "playlists": ["dutch"]
-    },
-    {
       "title": "Loterij",
-      "artist": "Lil Kleine ft. Ronnie Flex",
+      "artist": "Lil Kleine, Ronnie Flex",
       "album": "Alleen",
       "year": 2017,
       "playlists": ["dutch"]
@@ -753,13 +746,6 @@
       "artist": "Joost, De Kreuners",
       "album": "Joost Klein 7",
       "year": 2020,
-      "playlists": ["dutch"]
-    },
-    {
-      "title": "Zij Maakt Het Verschil",
-      "artist": "Frans Bauer",
-      "album": "Dicht Bij Jou",
-      "year": 2002,
       "playlists": ["dutch"]
     },
     {
@@ -1211,13 +1197,6 @@
       "playlists": ["dutch"]
     },
     {
-      "title": "Schatje Mag Ik Je Foto?",
-      "artist": "Gebroeders Ko",
-      "album": "Dubbel Ko",
-      "year": 2008,
-      "playlists": ["dutch"]
-    },
-    {
       "title": "Sex Met Die Kale",
       "artist": "LawineBoys",
       "album": "Sex Met Die Kale",
@@ -1303,7 +1282,7 @@
     },
     {
       "title": "Ik Voel Me Zo Verdomd Alleen",
-      "artist": "Danny De Munk (Ciske de Rat)",
+      "artist": "Danny De Munk",
       "album": "Ciske de Rat",
       "year": 1984,
       "playlists": ["dutch"]
@@ -1313,20 +1292,6 @@
       "artist": "FLEMMING, Zoë Tauran, Ronnie Flex",
       "album": "Twee Stappen Voor",
       "year": 2024,
-      "playlists": ["dutch"]
-    },
-    {
-      "title": "Alaka",
-      "artist": "Broederliefde, Kalibwoy, SBMG",
-      "album": "Hard Work Pays Off",
-      "year": 2015,
-      "playlists": ["dutch"]
-    },
-    {
-      "title": "LIT",
-      "artist": "SBMG",
-      "album": "Metro 53",
-      "year": 2018,
       "playlists": ["dutch"]
     },
     {
@@ -1341,20 +1306,6 @@
       "artist": "Antoon",
       "album": "De Nacht Is Van Ons",
       "year": 2020,
-      "playlists": ["dutch"]
-    },
-    {
-      "title": "Liegen Voor De Rechter",
-      "artist": "Lil Kleine, Ronnie Flex, Jonna Fraser",
-      "album": "New Wave",
-      "year": 2015,
-      "playlists": ["dutch"]
-    },
-    {
-      "title": "Away",
-      "artist": "Frenna",
-      "album": "Geen Oog Dichtgedaan",
-      "year": 2016,
       "playlists": ["dutch"]
     },
     {
@@ -1383,13 +1334,6 @@
       "artist": "Samuel Welten",
       "album": "Echte Liefde Is Te Koop",
       "year": 2025,
-      "playlists": ["dutch"]
-    },
-    {
-      "title": "Mooie Dag",
-      "artist": "Jayh",
-      "album": "Mooie Dag",
-      "year": 2014,
       "playlists": ["dutch"]
     },
     {

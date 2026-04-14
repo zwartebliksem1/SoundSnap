@@ -194,6 +194,22 @@ export async function searchPublicPreviewClip(title, artist) {
   return best?.previewUrl || candidates[0]?.previewUrl || null;
 }
 
+export async function resolvePreviewClipForLocalSong(song) {
+  // 1) Use curated local preview URL first when present.
+  if (song?.previewUrl) {
+    return song.previewUrl;
+  }
+
+  // 2) Try Spotify lookup when a token is available.
+  const spotifyPreview = await searchTrackPreview(song?.title || "", song?.artist || "");
+  if (spotifyPreview) {
+    return spotifyPreview;
+  }
+
+  // 3) Fallback to iTunes public search.
+  return await searchPublicPreviewClip(song?.title || "", song?.artist || "");
+}
+
 export async function getUserPlaylists() {
   const token = await getAccessToken();
   if (!token) return [];
