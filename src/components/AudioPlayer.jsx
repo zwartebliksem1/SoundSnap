@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Play, Pause, Volume2, VolumeX } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, Loader2, SkipForward } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import VinylDisc from "./VinylDisc";
@@ -9,17 +9,20 @@ const PLAY_DURATION = 30; // seconds
 const RING_SIZE = 288;
 const DISC_SIZE = 282;
 
-export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, currentSong, onPlaybackStart }) {
+export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, currentSong, onPlaybackStart, onDevNextSong }) {
   const audioRef = useRef(null);
   const timerRef = useRef(null);
+  const loadingTimeoutRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [finished, setFinished] = useState(false);
+  const [showLoadingIcon, setShowLoadingIcon] = useState(false);
 
   const progress = (elapsed / PLAY_DURATION) * 100;
   const remaining = PLAY_DURATION - elapsed;
+  const isDevMode = import.meta.env.DEV || import.meta.env.VITE_ENV === "development";
 
   const stopTimer = useCallback(() => {
     if (timerRef.current) {
@@ -54,6 +57,9 @@ export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, c
   useEffect(() => {
     return () => {
       stopTimer();
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.src = "";
@@ -67,8 +73,32 @@ export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, c
     setHasStarted(false);
     setElapsed(0);
     setFinished(false);
+    setShowLoadingIcon(false);
+    if (loadingTimeoutRef.current) {
+      clearTimeout(loadingTimeoutRef.current);
+    }
     stopTimer();
   }, [audioUrl, stopTimer]);
+
+  // Show loading icon after 0.5 seconds of loading
+  useEffect(() => {
+    if (isLoading) {
+      loadingTimeoutRef.current = setTimeout(() => {
+        setShowLoadingIcon(true);
+      }, 500);
+    } else {
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
+      setShowLoadingIcon(false);
+    }
+
+    return () => {
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
+    };
+  }, [isLoading]);
 
   // Autoplay when a song URL is ready and loading is done
   useEffect(() => {
@@ -157,7 +187,7 @@ export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, c
             [DEV] {currentSong.title} - {currentSong.artist}
           </div>
         )}
-        {hasStarted && !finished && (
+        {!finished && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -176,28 +206,25 @@ export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, c
             Time's up!
           </motion.div>
         )}
-        {!hasStarted && !isLoading && (
-          <p className="text-muted-foreground text-sm">Press play to start listening</p>
-        )}
-        {isLoading && (
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <div className="w-4 h-4 border-2 border-muted-foreground/30 border-t-primary rounded-full animate-spin" />
-            <span className="text-sm">Loading song...</span>
-          </div>
-        )}
       </div>
 
       {/* Controls */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center flex-row gap-4">
         {!finished ? (
           <>
             <Button
               size="lg"
               onClick={togglePlayback}
               disabled={isLoading || !audioUrl}
-              className="h-16 w-16 rounded-full bg-gradient-to-br from-primary to-accent text-white hover:opacity-90 transition-all shadow-lg shadow-primary/30 disabled:opacity-60"
+              className="relative h-16 w-16 rounded-full bg-gradient-to-br from-primary to-accent text-white hover:opacity-90 transition-all shadow-lg shadow-primary/30 disabled:opacity-60"
             >
-              {hasStarted && isPlaying ? (
+              {showLoadingIcon ? (
+                <Loader2
+                  size={26}
+                  className="text-white shrink-0 animate-spin"
+                  style={{ minWidth: 26, minHeight: 26, display: "block" }}
+                />
+              ) : !hasStarted || isPlaying ? (
                 <Pause
                   size={28}
                   className="text-white shrink-0"
@@ -215,15 +242,15 @@ export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, c
               )}
             </Button>
 
-            {hasStarted && (
+
               <Button
                 variant="outline"
                 onClick={onTimeUp}
                 className="h-12 px-5 rounded-full"
+                disabled={hasStarted}
               >
                 Reveal Now
               </Button>
-            )}
           </>
         ) : (
           <Button
@@ -234,8 +261,6 @@ export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, c
             Reveal Song
           </Button>
         )}
-
-        {hasStarted && (
           <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
             <Button
               variant="ghost"
@@ -250,8 +275,18 @@ export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, c
               )}
             </Button>
           </motion.div>
-        )}
-      </div>
+        </div>
+
+      {isDevMode && onDevNextSong && (
+        <Button
+          variant="outline"
+          onClick={onDevNextSong}
+          className="rounded-full h-10 px-4"
+        >
+          <SkipForward className="w-4 h-4 mr-2" />
+          Next Song (DEV)
+        </Button>
+      )}
     </div>
   );
 }

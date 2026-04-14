@@ -544,6 +544,7 @@ export default function Game() {
                   isLoading={isLoading}
                   currentSong={currentSong}
                   onPlaybackStart={() => setHasGameplayStarted(true)}
+                  onDevNextSong={handleNextSong}
                 />
                 {!isLoading && noPreview && (
                   <div className="mt-6 text-center">
