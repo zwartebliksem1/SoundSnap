@@ -62,22 +62,23 @@ export default function Game() {
   const totalGameSongs = teams.length > 0 ? teams.length * maxSongsPerTeam : 0;
 
   function generatePlayOrder(teamCount, maxSongs) {
+    const shuffledIndices = Array.from({ length: teamCount }, (_, i) => i);
+    for (let i = shuffledIndices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledIndices[i], shuffledIndices[j]] = [shuffledIndices[j], shuffledIndices[i]];
+    }
+
     const order = [];
     for (let round = 0; round < maxSongs; round++) {
-      const indices = Array.from({ length: teamCount }, (_, i) => i);
-      for (let i = indices.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [indices[i], indices[j]] = [indices[j], indices[i]];
-      }
-      order.push(...indices);
+      order.push(...shuffledIndices);
     }
     return order;
   }
 
   const canPlayPremiumFromTop = playMode === "premium" && connected && premiumSource === "top" && topTracksPool.length > 0;
   const canPlayPremiumFromPlaylist = playMode === "premium" && connected && premiumSource === "playlists" && !!selectedSpotifyPlaylistId;
-  const shouldLoadPremiumSong = (canPlayPremiumFromTop || canPlayPremiumFromPlaylist) && setupComplete;
-  const shouldLoadPreviewSong = playMode === "preview" && connected && selectedGenre !== null && setupComplete;
+  const shouldLoadPremiumSong = (canPlayPremiumFromTop || canPlayPremiumFromPlaylist) && setupComplete && phase === "playing";
+  const shouldLoadPreviewSong = playMode === "preview" && connected && selectedGenre !== null && setupComplete && phase === "playing";
 
   const pickRandomFromPool = useCallback((pool, excludedIds = []) => {
     const available = pool.filter((item) => !excludedIds.includes(item.trackId));
@@ -185,6 +186,16 @@ export default function Game() {
     }
   }, [shouldLoadPremiumSong, selectedSpotifyPlaylistId, premiumSource]);
 
+  useEffect(() => {
+    if (!(setupComplete && phase === "intro" && currentTeam)) return;
+
+    const timeoutId = window.setTimeout(() => {
+      setPhase("playing");
+    }, 4500);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [setupComplete, phase, currentTeam]);
+
   const loadTopTracks = useCallback(async () => {
     if (!(connected && playMode === "premium")) return;
 
@@ -260,6 +271,7 @@ export default function Game() {
     setSelectedGenre(null);
     setSetupStep(null);
     setSetupComplete(false);
+    setPhase("playing");
     setPlayers([]);
     setTeams([]);
     setMaxSongsPerTeam(10);
@@ -281,6 +293,7 @@ export default function Game() {
 
   const handleContinueWithoutPlayers = () => {
     setSetupStep(null);
+    setPhase("playing");
     setSetupComplete(true);
   };
 
@@ -290,12 +303,14 @@ export default function Game() {
   };
 
   const handleTeamsStart = ({ teams: configuredTeams, maxSongsPerTeam: maxSongs }) => {
+    const playOrder = generatePlayOrder(configuredTeams.length, maxSongs);
     setTeams(configuredTeams);
     setMaxSongsPerTeam(maxSongs);
-    setTeamPlayOrder(generatePlayOrder(configuredTeams.length, maxSongs));
+    setTeamPlayOrder(playOrder);
     setCurrentTurnIndex(0);
     setScores(Object.fromEntries(configuredTeams.map((t) => [t.name, 0])));
     setSetupStep(null);
+    setPhase(configuredTeams.length > 0 ? "intro" : "playing");
     setSetupComplete(true);
   };
 
@@ -410,6 +425,30 @@ export default function Game() {
                   onStart={handleTeamsStart}
                   onBack={handleTeamsBack}
                 />
+              </motion.div>
+            )}
+
+            {connected && setupComplete && phase === "intro" && currentTeam && (
+              <motion.div
+                key="intro"
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.04 }}
+                transition={{ duration: 0.25 }}
+                className="w-full max-w-md mx-auto text-center"
+              >
+                <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-6">
+                  <Users className="w-10 h-10 text-primary" />
+                </div>
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground mb-3">
+                  First Up
+                </p>
+                <h2 className="font-heading text-3xl font-bold text-foreground mb-3">
+                  {currentTeam.name}
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Get ready...
+                </p>
               </motion.div>
             )}
 

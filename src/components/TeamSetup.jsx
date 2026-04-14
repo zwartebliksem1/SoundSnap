@@ -53,8 +53,9 @@ export default function TeamSetup({ players, onStart, onBack }) {
   );
 
   const autoTeamOptions = useMemo(() => {
+    const maxTeamCount = Math.max(2, Math.ceil(players.length / 2));
     const options = [];
-    for (let t = 2; t <= Math.floor(players.length / 2); t++) {
+    for (let t = 2; t <= maxTeamCount; t++) {
       options.push(t);
     }
     return options;
@@ -151,7 +152,7 @@ export default function TeamSetup({ players, onStart, onBack }) {
         <motion.div variants={itemVariants} className="flex items-center gap-3 mb-6">
           <span className="text-sm text-muted-foreground">Teams:</span>
           {[2, 3, 4, 5]
-            .filter((n) => n <= players.length)
+            .filter((n) => n <= Math.max(2, Math.ceil(players.length / 2)))
             .map((n) => (
               <button
                 key={n}
