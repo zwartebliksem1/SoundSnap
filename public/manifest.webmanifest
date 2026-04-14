@@ -2,7 +2,7 @@
   "name": "SoundSnap",
   "short_name": "SoundSnap",
   "description": "A fast party music guessing game.",
-  "start_url": "/",
+  "start_url": "/SoundSnap/",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#f97316",
