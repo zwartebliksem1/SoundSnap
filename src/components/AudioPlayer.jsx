@@ -9,7 +9,7 @@ const PLAY_DURATION = 30; // seconds
 const RING_SIZE = 288;
 const DISC_SIZE = 282;
 
-export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading }) {
+export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, currentSong }) {
   const audioRef = useRef(null);
   const timerRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -144,6 +144,11 @@ export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading })
 
       {/* Timer */}
       <div className="text-center">
+        {import.meta.env.VITE_ENV === "development" && currentSong && (
+          <div className="mb-4 text-sm font-medium text-amber-500 border border-amber-500/50 rounded-lg p-2 bg-amber-500/10">
+            [DEV] {currentSong.title} - {currentSong.artist}
+          </div>
+        )}
         {hasStarted && !finished && (
           <motion.div
             initial={{ opacity: 0 }}

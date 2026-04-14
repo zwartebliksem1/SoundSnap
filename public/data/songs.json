@@ -1,7 +1,30 @@
 {
   "playlists": [
-    { "id": "oldies", "label": "Oldies", "description": "Classic hits from the past" },
-    { "id": "pop", "label": "Modern pop", "description": "Today's biggest hits" }
+    {
+      "id": "hits",
+      "label": "2000s Hits",
+      "description": "Biggest hits from the 2000s"
+    },
+    {
+      "id": "pop",
+      "label": "Pop Hits",
+      "description": "Modern pop favorites from 2010 to now"
+    },
+    {
+      "id": "oldies",
+      "label": "Oldies",
+      "description": "Classic hits from the past"
+    },
+    {
+      "id": "love",
+      "label": "Love Songs",
+      "description": "Romantic songs for every mood"
+    },
+    {
+      "id": "dutch",
+      "label": "Dutch Hits",
+      "description": "Popular songs from Dutch artists"
+    }
   ],
   "songs": [
     {
@@ -149,217 +172,630 @@
       "artist": "The Killers",
       "album": "Hot Fuss",
       "year": 2003,
-      "playlists": ["oldies", "pop"]
+      "playlists": ["hits"]
     },
     {
       "title": "Seven Nation Army",
       "artist": "The White Stripes",
       "album": "Elephant",
       "year": 2003,
-      "playlists": ["oldies"]
+      "playlists": ["hits"]
     },
     {
       "title": "Crazy in Love",
       "artist": "Beyoncé ft. Jay-Z",
       "album": "Dangerously in Love",
       "year": 2003,
-      "playlists": ["oldies", "pop"]
+      "playlists": ["hits"]
     },
     {
       "title": "Hey Ya!",
       "artist": "OutKast",
       "album": "Speakerboxxx/The Love Below",
       "year": 2003,
-      "playlists": ["oldies"]
-    },
-    {
-      "title": "Somebody That I Used to Know",
-      "artist": "Gotye ft. Kimbra",
-      "album": "Making Mirrors",
-      "year": 2011,
-      "playlists": ["oldies", "pop"]
+      "playlists": ["hits"]
     },
     {
       "title": "Rolling in the Deep",
       "artist": "Adele",
       "album": "21",
-      "year": 2010,
-      "playlists": ["oldies", "pop"]
+      "year": 2011,
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Blinding Lights",
       "artist": "The Weeknd",
       "album": "After Hours",
       "year": 2020,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Shape of You",
       "artist": "Ed Sheeran",
       "album": "÷ (Divide)",
       "year": 2017,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Bad Guy",
       "artist": "Billie Eilish",
       "album": "When We All Fall Asleep, Where Do We Go?",
       "year": 2019,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Levitating",
       "artist": "Dua Lipa",
       "album": "Future Nostalgia",
       "year": 2020,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Uptown Funk",
       "artist": "Mark Ronson ft. Bruno Mars",
       "album": "Uptown Special",
       "year": 2014,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Stay",
       "artist": "The Kid LAROI & Justin Bieber",
       "album": "F*CK LOVE 3: OVER YOU",
       "year": 2021,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "As It Was",
       "artist": "Harry Styles",
       "album": "Harry's House",
       "year": 2022,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Watermelon Sugar",
       "artist": "Harry Styles",
       "album": "Fine Line",
       "year": 2019,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Don't Start Now",
       "artist": "Dua Lipa",
       "album": "Future Nostalgia",
       "year": 2019,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Cruel Summer",
       "artist": "Taylor Swift",
       "album": "Lover",
       "year": 2019,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Anti-Hero",
       "artist": "Taylor Swift",
       "album": "Midnights",
       "year": 2022,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Flowers",
       "artist": "Miley Cyrus",
       "album": "Endless Summer Vacation",
       "year": 2023,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "good 4 u",
       "artist": "Olivia Rodrigo",
       "album": "SOUR",
       "year": 2021,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Dance The Night",
       "artist": "Dua Lipa",
       "album": "Barbie The Album",
       "year": 2023,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Believer",
       "artist": "Imagine Dragons",
       "album": "Evolve",
       "year": 2017,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Sunflower",
       "artist": "Post Malone & Swae Lee",
       "album": "Spider-Man: Into the Spider-Verse",
       "year": 2018,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Sweater Weather",
       "artist": "The Neighbourhood",
       "album": "I Love You.",
       "year": 2013,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Can't Stop The Feeling!",
       "artist": "Justin Timberlake",
       "album": "TROLLS OST",
       "year": 2016,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "drivers license",
       "artist": "Olivia Rodrigo",
       "album": "SOUR",
       "year": 2021,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Peaches",
       "artist": "Justin Bieber ft. Daniel Caesar & Giveon",
       "album": "Justice",
       "year": 2021,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Heat Waves",
       "artist": "Glass Animals",
       "album": "Dreamland",
       "year": 2020,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Save Your Tears",
       "artist": "The Weeknd",
       "album": "After Hours",
       "year": 2020,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Starboy",
       "artist": "The Weeknd ft. Daft Punk",
       "album": "Starboy",
       "year": 2016,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Happier Than Ever",
       "artist": "Billie Eilish",
       "album": "Happier Than Ever",
       "year": 2021,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
     },
     {
       "title": "Espresso",
       "artist": "Sabrina Carpenter",
-      "album": "espresso",
+      "album": "Short n' Sweet",
       "year": 2024,
-      "playlists": ["pop"]
+      "playlists": ["hits", "pop"]
+    },
+    {
+      "title": "Nonsense",
+      "artist": "Sabrina Carpenter",
+      "album": "emails i can't send",
+      "year": 2022,
+      "playlists": ["hits", "pop"]
+    },
+    {
+      "title": "The Fate of Ophelia",
+      "artist": "Taylor Swift",
+      "album": "The Fate of Ophelia",
+      "year": 2026,
+      "playlists": ["hits", "pop"]
+    },
+    {
+      "title": "I Just Might",
+      "artist": "Bruno Mars",
+      "album": "The Romantic",
+      "year": 2026,
+      "playlists": ["hits", "pop"]
+    },
+    {
+      "title": "24K Magic",
+      "artist": "Bruno Mars",
+      "album": "24K Magic",
+      "year": 2016,
+      "playlists": ["hits", "pop"]
+    },
+    {
+      "title": "That's What I Like",
+      "artist": "Bruno Mars",
+      "album": "24K Magic",
+      "year": 2016,
+      "playlists": ["hits", "pop"]
+    },
+    {
+      "title": "Finesse",
+      "artist": "Bruno Mars",
+      "album": "24K Magic",
+      "year": 2016,
+      "playlists": ["hits", "pop"]
+    },
+    {
+      "title": "Stuck With U",
+      "artist": "Ariana Grande & Justin Bieber",
+      "album": "Stuck With U (Single)",
+      "year": 2020,
+      "playlists": ["hits", "pop"]
+    },
+    {
+      "title": "Sorry",
+      "artist": "Justin Bieber",
+      "album": "Purpose",
+      "year": 2015,
+      "playlists": ["hits", "pop"]
+    },
+    {
+      "title": "A Thousand Miles",
+      "artist": "Vanessa Carlton",
+      "album": "Be Not Nobody",
+      "year": 2002,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Bubbly",
+      "artist": "Colbie Caillat",
+      "album": "Coco",
+      "year": 2007,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Pocketful of Sunshine",
+      "artist": "Natasha Bedingfield",
+      "album": "Pocketful of Sunshine",
+      "year": 2008,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Put Your Records On",
+      "artist": "Corinne Bailey Rae",
+      "album": "Corinne Bailey Rae",
+      "year": 2006,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Just a Dream",
+      "artist": "Nelly",
+      "album": "5.0",
+      "year": 2010,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Break Your Heart",
+      "artist": "Taio Cruz ft. Ludacris",
+      "album": "Rokstarr",
+      "year": 2009,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Airplanes",
+      "artist": "B.o.B ft. Hayley Williams",
+      "album": "B.o.B Presents: The Adventures of Bobby Ray",
+      "year": 2010,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Stereo Hearts",
+      "artist": "Gym Class Heroes ft. Adam Levine",
+      "album": "The Papercut Chronicles II",
+      "year": 2011,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Replay",
+      "artist": "Iyaz",
+      "album": "Replay",
+      "year": 2009,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Hot N Cold",
+      "artist": "Katy Perry",
+      "album": "One of the Boys",
+      "year": 2008,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Tik Tok",
+      "artist": "Kesha",
+      "album": "Animal",
+      "year": 2009,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Goodies",
+      "artist": "Ciara",
+      "album": "Goodies",
+      "year": 2004,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Bleeding Love",
+      "artist": "Leona Lewis",
+      "album": "Spirit",
+      "year": 2007,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Say It Right",
+      "artist": "Nelly Furtado",
+      "album": "Loose",
+      "year": 2006,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "She Will Be Loved",
+      "artist": "Maroon 5",
+      "album": "Songs About Jane",
+      "year": 2002,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Are You Gonna Be My Girl",
+      "artist": "Jet",
+      "album": "Get Born",
+      "year": 2003,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "I'm Yours",
+      "artist": "Jason Mraz",
+      "album": "We Sing. We Dance. We Steal Things.",
+      "year": 2008,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Bad Day",
+      "artist": "Daniel Powter",
+      "album": "Daniel Powter",
+      "year": 2005,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Unwritten",
+      "artist": "Natasha Bedingfield",
+      "album": "Unwritten",
+      "year": 2004,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Suddenly I See",
+      "artist": "KT Tunstall",
+      "album": "Eye to the Telescope",
+      "year": 2004,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Beautiful Girls",
+      "artist": "Sean Kingston",
+      "album": "Sean Kingston",
+      "year": 2007,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Closer",
+      "artist": "Ne-Yo",
+      "album": "Year of the Gentleman",
+      "year": 2008,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Whatcha Say",
+      "artist": "Jason Derulo",
+      "album": "Jason Derulo",
+      "year": 2009,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Fireflies",
+      "artist": "Owl City",
+      "album": "Ocean Eyes",
+      "year": 2009,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Love Song",
+      "artist": "Sara Bareilles",
+      "album": "Little Voice",
+      "year": 2007,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Since U Been Gone",
+      "artist": "Kelly Clarkson",
+      "album": "Breakaway",
+      "year": 2004,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Stacy's Mom",
+      "artist": "Fountains of Wayne",
+      "album": "Welcome Interstate Managers",
+      "year": 2003,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Sk8er Boi",
+      "artist": "Avril Lavigne",
+      "album": "Let Go",
+      "year": 2002,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Toxic",
+      "artist": "Britney Spears",
+      "album": "In the Zone",
+      "year": 2003,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Complicated",
+      "artist": "Avril Lavigne",
+      "album": "Let Go",
+      "year": 2002,
+      "playlists": ["hits"]
+    },
+    {
+      "title": "Bloed, zweet & tranen",
+      "artist": "André Hazes",
+      "album": "Bloed, zweet & tranen",
+      "year": 2002,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Zij Gelooft in Mij",
+      "artist": "André Hazes",
+      "album": "Gewoon André",
+      "year": 1981,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Dromen Zijn Bedrog",
+      "artist": "Marco Borsato",
+      "album": "Marco",
+      "year": 1994,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Rood",
+      "artist": "Marco Borsato",
+      "album": "Symphonica in Rosso",
+      "year": 2006,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Ik Leef Niet Meer Voor Jou",
+      "artist": "Marco Borsato",
+      "album": "Als Geen Ander",
+      "year": 1995,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Het Is Een Nacht... (Levensecht)",
+      "artist": "Guus Meeuwis & Vagant",
+      "album": "Verbazing",
+      "year": 1995,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Brabant",
+      "artist": "Guus Meeuwis",
+      "album": "Guus Meeuwis",
+      "year": 2003,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "'t Dondert En 't Bliksemt",
+      "artist": "Guus Meeuwis & Vagant",
+      "album": "Schilderij",
+      "year": 1997,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Ik Neem Je Mee",
+      "artist": "Gers Pardoel",
+      "album": "Deze wereld is van jou",
+      "year": 2011,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Bagagedrager",
+      "artist": "Gers Pardoel ft. Sef",
+      "album": "Deze wereld is van jou",
+      "year": 2011,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Drank & Drugs",
+      "artist": "Lil Kleine & Ronnie Flex",
+      "album": "New Wave",
+      "year": 2015,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Loterij",
+      "artist": "Lil Kleine ft. Ronnie Flex",
+      "album": "Alleen",
+      "year": 2017,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Parijs",
+      "artist": "Kenny B",
+      "album": "Kenny B",
+      "year": 2015,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Onderweg",
+      "artist": "Abel",
+      "album": "De stilte voorbij",
+      "year": 2000,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "In de hemel is geen bier",
+      "artist": "Dorus",
+      "album": "De beste van Dorus",
+      "year": 1970,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Ik wil je",
+      "artist": "Joost, De Kreuners",
+      "album": "Joost Klein 7",
+      "year": 2020,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Zij Maakt Het Verschil",
+      "artist": "Frans Bauer",
+      "album": "Dicht Bij Jou",
+      "year": 2002,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Heb Je Even Voor Mij",
+      "artist": "Frans Bauer",
+      "album": "Dicht Bij Jou",
+      "year": 2002,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Zing voor me",
+      "artist": "Lange Frans & Thé Lau",
+      "album": "Levenslied",
+      "year": 2010,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Zing, Vecht, Huil, Bid, Lach, Werk En Bewonder",
+      "artist": "Ramses Shaffy",
+      "album": "Zonder Bagage",
+      "year": 1971,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Aan de andere kant van de heuvels",
+      "artist": "Liesbeth List & Ramses Shaffy",
+      "album": "Zonder Bagage",
+      "year": 1970,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "De ontmoeting",
+      "artist": "Frank Boeijen",
+      "album": "De ontmoeting",
+      "year": 1994,
+      "playlists": ["dutch"]
     }
   ]
 }

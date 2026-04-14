@@ -76,9 +76,10 @@ export default function PlayerSetup({ onContinueWithoutPlayers, onNext }) {
       initial="hidden"
       animate="show"
       exit="exit"
-      className="w-full max-w-md mx-auto"
+      className="w-full max-w-md mx-auto flex flex-col h-[85vh] max-h-screen"
     >
-      <motion.div variants={itemVariants} className="text-center mb-8">
+      <div className="flex-1 overflow-y-auto min-h-0 pb-4">
+        <motion.div variants={itemVariants} className="text-center mb-8">
         <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-4">
           <Users className="w-8 h-8 text-primary" />
         </div>
@@ -152,20 +153,20 @@ export default function PlayerSetup({ onContinueWithoutPlayers, onNext }) {
           Add another player
         </button>
       </motion.div>
+      </div>
 
-      <motion.div variants={itemVariants} className="mt-8 flex flex-col gap-3">
-        {hasPlayers && (
-          <Button
-            onClick={() => {
-              saveRememberedPlayers(validNames);
-              onNext(validNames);
-            }}
-            className="w-full h-12 rounded-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all font-semibold text-base"
-          >
-            Next
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
-        )}
+      <motion.div variants={itemVariants} className="mt-auto pt-4 flex flex-col gap-3 shrink-0">
+        <Button
+          disabled={!hasPlayers}
+          onClick={() => {
+            saveRememberedPlayers(validNames);
+            onNext(validNames);
+          }}
+          className="w-full h-12 rounded-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all font-semibold text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:opacity-50"
+        >
+          Next
+          <ArrowRight className="w-4 h-4 ml-2" />
+        </Button>
         <Button
           variant="outline"
           onClick={onContinueWithoutPlayers}

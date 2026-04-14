@@ -22,10 +22,12 @@ import {
   getUserTopTracksPool,
 } from "../lib/spotify";
 
+import { incrementGamesPlayed } from "../lib/unlocks";
+
 export default function Game() {
   const navigate = useNavigate();
-  const [connected, setConnected] = useState(isConnected());
-  const [playMode, setPlayMode] = useState(isConnected() ? "premium" : null);
+  const [connected, setConnected] = useState(true);
+  const [playMode, setPlayMode] = useState("preview");
   const [phase, setPhase] = useState("playing");
   const [currentSong, setCurrentSong] = useState(null);
   const [audioUrl, setAudioUrl] = useState(null);
@@ -230,6 +232,7 @@ export default function Game() {
     if (teams.length > 0) {
       const nextTurn = currentTurnIndex + 1;
       if (nextTurn >= teamPlayOrder.length) {
+        incrementGamesPlayed();
         setPhase("finished");
         return;
       }
@@ -479,6 +482,7 @@ export default function Game() {
                   albumArt={currentSong?.albumArt}
                   onTimeUp={handleTimeUp}
                   isLoading={isLoading}
+                  currentSong={currentSong}
                 />
                 {!isLoading && noPreview && (
                   <div className="mt-6 text-center">
