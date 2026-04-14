@@ -247,7 +247,7 @@ export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, c
                 variant="outline"
                 onClick={onTimeUp}
                 className="h-12 px-5 rounded-full"
-                disabled={hasStarted}
+                disabled={!hasStarted}
               >
                 Reveal Now
               </Button>
