@@ -1405,6 +1405,13 @@
       "album": "Baila de Gasolina",
       "year": 2025,
       "playlists": ["dutch"]
+    },
+    {
+      "title": "Kabouterdans",
+      "artist": "Kabouter Plop",
+      "album": "Plop",
+      "year": 1998,
+      "playlists": ["dutch"]
     }
   ]
 }
