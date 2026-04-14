@@ -9,7 +9,7 @@ const PLAY_DURATION = 30; // seconds
 const RING_SIZE = 288;
 const DISC_SIZE = 282;
 
-export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, currentSong }) {
+export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, currentSong, onPlaybackStart }) {
   const audioRef = useRef(null);
   const timerRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -70,6 +70,13 @@ export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, c
     stopTimer();
   }, [audioUrl, stopTimer]);
 
+  // Autoplay when a song URL is ready and loading is done
+  useEffect(() => {
+    if (!audioUrl || isLoading) return;
+    startPlayback();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [audioUrl, isLoading]);
+
   const startPlayback = async () => {
     if (!audioUrl || isLoading) return;
 
@@ -86,6 +93,7 @@ export default function AudioPlayer({ audioUrl, albumArt, onTimeUp, isLoading, c
       setIsPlaying(true);
       setHasStarted(true);
       setElapsed(0);
+      onPlaybackStart?.();
       startTimer();
     } catch {
       setIsPlaying(false);

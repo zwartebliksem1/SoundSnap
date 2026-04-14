@@ -76,7 +76,7 @@ export default function PlayerSetup({ onContinueWithoutPlayers, onNext }) {
       initial="hidden"
       animate="show"
       exit="exit"
-      className="w-full max-w-md mx-auto flex flex-col h-[85vh] max-h-screen"
+      className="w-full max-w-md mx-auto flex flex-col h-[84vh] max-h-screen"
     >
       <div className="flex-1 overflow-y-auto min-h-0 pb-4">
         <motion.div variants={itemVariants} className="text-center mb-8">

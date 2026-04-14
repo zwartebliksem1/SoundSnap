@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ArrowLeft, Music, LogOut, Users, Trophy } from "lucide-react";
+import { ArrowLeft, Music, Users, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -55,6 +55,8 @@ export default function Game() {
   const [teamPlayOrder, setTeamPlayOrder] = useState([]);
   const [currentTurnIndex, setCurrentTurnIndex] = useState(0);
   const [scores, setScores] = useState({});  // { teamName: number }
+  const [hasGameplayStarted, setHasGameplayStarted] = useState(false);
+  const [showLeaveConfirmModal, setShowLeaveConfirmModal] = useState(false);
 
   const currentTeam = teams.length > 0 && teamPlayOrder.length > 0
     ? teams[teamPlayOrder[currentTurnIndex % teamPlayOrder.length]]
@@ -278,6 +280,24 @@ export default function Game() {
     setTeamPlayOrder([]);
     setCurrentTurnIndex(0);
     setScores({});
+    setHasGameplayStarted(false);
+  };
+
+  const handleBackPress = () => {
+    const gameInProgress = setupComplete && hasGameplayStarted && phase !== "finished";
+    if (gameInProgress) {
+      setShowLeaveConfirmModal(true);
+      return;
+    }
+
+    handleDisconnect();
+    navigate("/", { replace: true });
+  };
+
+  const confirmLeaveGame = () => {
+    setShowLeaveConfirmModal(false);
+    handleDisconnect();
+    navigate("/", { replace: true });
   };
 
   const handleUsePreviewMode = () => {
@@ -361,10 +381,7 @@ export default function Game() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => {
-                handleDisconnect();
-                navigate("/", { replace: true });
-              }}
+              onClick={handleBackPress}
               className="rounded-full text-muted-foreground hover:text-foreground"
             >
               <ArrowLeft className="w-5 h-5" />
@@ -377,40 +394,31 @@ export default function Game() {
 
           <div className="flex-1 flex items-center justify-end gap-2 z-10">
             {connected && setupComplete && (
-              <>
-                <div className="flex items-center gap-1.5 bg-card/50 backdrop-blur border border-border/50 rounded-full px-3 py-1.5">
-                  <span className="text-xs text-muted-foreground">Song</span>
-                  <span className="text-sm font-heading font-bold text-primary">{songsPlayed}{totalGameSongs > 0 ? ` / ${totalGameSongs}` : ""}</span>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleDisconnect}
-                  className="rounded-full text-muted-foreground hover:text-foreground"
-                  title="Disconnect Spotify"
-                >
-                  <LogOut className="w-4 h-4" />
-                </Button>
-              </>
+              <div className="flex items-center gap-1.5 bg-card/50 backdrop-blur border border-border/50 rounded-full px-3 py-1.5">
+                <span className="text-xs text-muted-foreground">Song</span>
+                <span className="text-sm font-heading font-bold text-primary">{songsPlayed}{totalGameSongs > 0 ? ` / ${totalGameSongs}` : ""}</span>
+              </div>
             )}
           </div>
         </header>
 
         {/* Main Content */}
-        <div className="flex-1 flex items-center justify-center px-6 py-8">
+        <div className="flex-1 min-h-0 overflow-hidden flex items-center justify-center px-6 py-8">
           <AnimatePresence mode="wait">
             {!connected && (
-              <motion.div key="connect" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <motion.div key="connect" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full max-w-md mx-auto">
                 <SpotifyConnect onUsePreview={handleUsePreviewMode} />
               </motion.div>
             )}
 
             {connected && playMode === "preview" && selectedGenre === null && !setupComplete && (
-              <GenreSelect key="genre-select" onSelect={handleGenreSelect} />
+              <motion.div key="genre-select" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full max-w-md mx-auto">
+                <GenreSelect onSelect={handleGenreSelect} />
+              </motion.div>
             )}
 
             {connected && setupStep === "players" && (
-              <motion.div key="player-setup" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <motion.div key="player-setup" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full max-w-md mx-auto h-full max-h-full">
                 <PlayerSetup
                   onContinueWithoutPlayers={handleContinueWithoutPlayers}
                   onNext={handlePlayersNext}
@@ -419,7 +427,7 @@ export default function Game() {
             )}
 
             {connected && setupStep === "teams" && (
-              <motion.div key="team-setup" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <motion.div key="team-setup" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full max-w-md mx-auto">
                 <TeamSetup
                   players={players}
                   onStart={handleTeamsStart}
@@ -522,6 +530,7 @@ export default function Game() {
                   onTimeUp={handleTimeUp}
                   isLoading={isLoading}
                   currentSong={currentSong}
+                  onPlaybackStart={() => setHasGameplayStarted(true)}
                 />
                 {!isLoading && noPreview && (
                   <div className="mt-6 text-center">
@@ -545,7 +554,7 @@ export default function Game() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 30 }}
                 transition={{ duration: 0.3 }}
-                className="w-full"
+                className="w-full max-w-md mx-auto"
               >
                 {currentTeam && (
                   <div className="text-center mb-4">
@@ -565,12 +574,20 @@ export default function Game() {
             )}
 
             {connected && setupComplete && phase === "scoring" && currentSong && currentTeam && (
-              <ScoreAssign
-                key={`scoring-${songsPlayed}`}
-                song={currentSong}
-                teamName={currentTeam.name}
-                onConfirm={handleScoreConfirm}
-              />
+              <motion.div
+                key={`scoring-wrapper-${songsPlayed}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="w-full max-w-md mx-auto"
+              >
+                <ScoreAssign
+                  key={`scoring-${songsPlayed}`}
+                  song={currentSong}
+                  teamName={currentTeam.name}
+                  onConfirm={handleScoreConfirm}
+                />
+              </motion.div>
             )}
 
             {connected && setupComplete && phase === "finished" && (() => {
@@ -650,6 +667,50 @@ export default function Game() {
             })()}
           </AnimatePresence>
         </div>
+
+        <AnimatePresence>
+          {showLeaveConfirmModal && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center px-6"
+            >
+              <div
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                onClick={() => setShowLeaveConfirmModal(false)}
+              />
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 12 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 12 }}
+                transition={{ duration: 0.2 }}
+                className="relative w-full max-w-sm rounded-2xl border border-border bg-card/95 backdrop-blur p-5"
+              >
+                <h3 className="font-heading text-xl font-bold text-foreground mb-2">Abandon current game?</h3>
+                <p className="text-sm text-muted-foreground mb-5">
+                  All current progress and scores will be lost.
+                </p>
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    className="flex-1 rounded-full"
+                    onClick={() => setShowLeaveConfirmModal(false)}
+                  >
+                    Continue game
+                  </Button>
+                  <Button
+                    className="flex-1 rounded-full bg-destructive hover:opacity-90"
+                    onClick={confirmLeaveGame}
+                  >
+                    Leave game
+                  </Button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

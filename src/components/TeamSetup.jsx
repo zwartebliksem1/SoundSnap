@@ -47,7 +47,7 @@ export default function TeamSetup({ players, onStart, onBack }) {
   const [mode, setMode] = useState("individual");
   const [maxSongs, setMaxSongs] = useState(10);
   const [customView, setCustomView] = useState(false);
-  const [customTeamCount, setCustomTeamCount] = useState(2);
+  const [customTeamCount, setCustomTeamCount] = useState(Math.min(2, Math.max(1, players.length)));
   const [assignments, setAssignments] = useState(() =>
     Object.fromEntries(players.map((p) => [p, 0]))
   );
@@ -107,10 +107,12 @@ export default function TeamSetup({ players, onStart, onBack }) {
           team.name = `${team.players[0]}'s Team`;
         }
       });
-      return teams.filter((t) => t.players.length > 0);
+      return teams;
     }
     return [];
   }, [mode, players, customTeamCount, assignments]);
+
+  const hasEmptyCustomTeam = mode === "custom" && resolvedTeams.some((t) => t.players.length === 0);
 
   const cycleAssignment = (player) => {
     setAssignments((prev) => ({
@@ -120,6 +122,7 @@ export default function TeamSetup({ players, onStart, onBack }) {
   };
 
   const handleStart = () => {
+    if (hasEmptyCustomTeam) return;
     onStart({ teams: resolvedTeams, maxSongsPerTeam: maxSongs });
   };
 
@@ -149,32 +152,29 @@ export default function TeamSetup({ players, onStart, onBack }) {
         </motion.div>
 
         {/* Team count selector */}
-        <motion.div variants={itemVariants} className="flex items-center gap-3 mb-6">
-          <span className="text-sm text-muted-foreground">Teams:</span>
-          {[2, 3, 4, 5]
-            .filter((n) => n <= Math.max(2, Math.ceil(players.length / 2)))
-            .map((n) => (
-              <button
-                key={n}
-                onClick={() => {
-                  setCustomTeamCount(n);
-                  setAssignments((prev) => {
-                    const updated = { ...prev };
-                    Object.keys(updated).forEach((k) => {
-                      if (updated[k] >= n) updated[k] = 0;
-                    });
-                    return updated;
-                  });
-                }}
-                className={`h-9 w-9 rounded-full text-sm font-semibold transition-colors ${
-                  customTeamCount === n
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-card border border-border text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {n}
-              </button>
-            ))}
+        <motion.div variants={itemVariants} className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm text-muted-foreground">Teams</span>
+            <span className="text-sm font-semibold text-foreground">{customTeamCount}</span>
+          </div>
+          <input
+            type="range"
+            min={2}
+            max={players.length}
+            value={customTeamCount}
+            onChange={(e) => {
+              const n = parseInt(e.target.value);
+              setCustomTeamCount(n);
+              setAssignments((prev) => {
+                const updated = { ...prev };
+                Object.keys(updated).forEach((k) => {
+                  if (updated[k] >= n) updated[k] = 0;
+                });
+                return updated;
+              });
+            }}
+            className="w-full accent-[hsl(var(--primary))]"
+          />
         </motion.div>
 
         {/* Player assignments */}
@@ -200,12 +200,16 @@ export default function TeamSetup({ players, onStart, onBack }) {
         <motion.div variants={itemVariants} className="mb-6">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">Preview</p>
           <div className={`grid gap-3 ${resolvedTeams.length > 2 ? "grid-cols-3" : "grid-cols-2"}`}>
-            {resolvedTeams.map((team) => (
-              <div key={team.name} className="rounded-xl border border-border/50 bg-card/40 p-3">
-                <p className="text-xs font-semibold text-primary mb-1">{team.name}</p>
-                {team.players.map((p) => (
-                  <p key={p} className="text-xs text-muted-foreground">{p}</p>
-                ))}
+            {resolvedTeams.map((team, idx) => (
+              <div key={`custom-team-${idx}`} className="rounded-xl border border-border/50 bg-card/40 p-3">
+                <p className="text-xs font-semibold text-primary mb-1">{team.name || "Unassigned team"}</p>
+                {team.players.length > 0 ? (
+                  team.players.map((p) => (
+                    <p key={p} className="text-xs text-muted-foreground">{p}</p>
+                  ))
+                ) : (
+                  <p className="text-xs text-muted-foreground">No players yet</p>
+                )}
               </div>
             ))}
           </div>
@@ -214,10 +218,16 @@ export default function TeamSetup({ players, onStart, onBack }) {
         <motion.div variants={itemVariants}>
           <Button
             onClick={handleStart}
+            disabled={hasEmptyCustomTeam}
             className="w-full h-12 rounded-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all font-semibold text-base"
           >
             Start Game
           </Button>
+          {hasEmptyCustomTeam && (
+            <p className="mt-2 text-xs text-muted-foreground text-center">
+              Assign at least one player to each team to continue.
+            </p>
+          )}
         </motion.div>
       </motion.div>
     );

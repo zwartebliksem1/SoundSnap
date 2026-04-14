@@ -1181,6 +1181,230 @@
       "album": "Vooral jong blijven",
       "year": 1980,
       "playlists": ["dutch"]
+    },
+    {
+      "title": "Laat De Zon In Je Hart",
+      "artist": "Rene Schuurmans",
+      "album": "Vanaf Vandaag",
+      "year": 2007,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Een bom",
+      "artist": "Henk Dissel",
+      "album": "Een bom",
+      "year": 2012,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Jij Krijgt Die Lach Niet Van Mijn Gezicht",
+      "artist": "John de Bever",
+      "album": "Dat is de liefde",
+      "year": 2015,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Mooie Blauwe Ogen",
+      "artist": "Django Wagner",
+      "album": "Kali",
+      "year": 2009,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Schatje Mag Ik Je Foto?",
+      "artist": "Gebroeders Ko",
+      "album": "Dubbel Ko",
+      "year": 2008,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Sex Met Die Kale",
+      "artist": "LawineBoys",
+      "album": "Sex Met Die Kale",
+      "year": 2010,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Blijf Je Vanavond",
+      "artist": "Monique Smit",
+      "album": "Stel Je Voor",
+      "year": 2008,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Toeter Op M'n Waterscooter",
+      "artist": "Gebroeders Ko",
+      "album": "Villa Fiësta",
+      "year": 2003,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Kijk Omhoog",
+      "artist": "Nick & Simon",
+      "album": "Vandaag",
+      "year": 2007,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Ik Ga Zwemmen",
+      "artist": "Mart Hoogkamer",
+      "album": "MASHUP & EDIT PACK 2021 VOL.2",
+      "year": 2021,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Stapelgek",
+      "artist": "Bankzitters",
+      "album": "Stapelgek",
+      "year": 2021,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Ga Dan!",
+      "artist": "Roxy Dekker",
+      "album": "Mama I Made It",
+      "year": 2025,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Loser",
+      "artist": "Roxy Dekker",
+      "album": "GO BESTFRIEND",
+      "year": 2025,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Zo Kan Het Dus Ook",
+      "artist": "Nielson",
+      "album": "Zo Kan Het Dus Ook",
+      "year": 2013,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Still Champagne",
+      "artist": "Davina Michelle",
+      "album": "",
+      "year": 1999,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Niet Of Nooit Geweest",
+      "artist": "Acda en de Munnik",
+      "album": "Naar Huis",
+      "year": 1998,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Bij Haar Zijn",
+      "artist": "Acda en de Munnik",
+      "album": "Naar Huis",
+      "year": 1998,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Ik Voel Me Zo Verdomd Alleen",
+      "artist": "Danny De Munk (Ciske de Rat)",
+      "album": "Ciske de Rat",
+      "year": 1984,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Alles Op Gevoel",
+      "artist": "FLEMMING, Zoë Tauran, Ronnie Flex",
+      "album": "Twee Stappen Voor",
+      "year": 2024,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Alaka",
+      "artist": "Broederliefde, Kalibwoy, SBMG",
+      "album": "Hard Work Pays Off",
+      "year": 2015,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "LIT",
+      "artist": "SBMG",
+      "album": "Metro 53",
+      "year": 2018,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Olivia",
+      "artist": "Antoon",
+      "album": "Engel",
+      "year": 2023,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Voor Mij",
+      "artist": "Antoon",
+      "album": "De Nacht Is Van Ons",
+      "year": 2020,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Liegen Voor De Rechter",
+      "artist": "Lil Kleine, Ronnie Flex, Jonna Fraser",
+      "album": "New Wave",
+      "year": 2015,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Away",
+      "artist": "Frenna",
+      "album": "Geen Oog Dichtgedaan",
+      "year": 2016,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Beetje Van Mij",
+      "artist": "Antoon",
+      "album": "Beetje Van Mij",
+      "year": 2025,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Brommers Kieken",
+      "artist": "Boer Harm",
+      "album": "Brommers Kieken",
+      "year": 2024,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Slaap Lekker (Fantastig toch)",
+      "artist": "Diggy Dex, Eva de Rovere",
+      "album": "Lange Nachten, Korte Dagen",
+      "year": 1999,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Echte Liefde Is Te Koop",
+      "artist": "Samuel Welten",
+      "album": "Echte Liefde Is Te Koop",
+      "year": 2025,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Mooie Dag",
+      "artist": "Jayh",
+      "album": "Mooie Dag",
+      "year": 2014,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Limousine",
+      "artist": "Turfy Gang",
+      "album": "Loafers van Puppyleer Deluxe",
+      "year": 2023,
+      "playlists": ["dutch"]
+    },
+    {
+      "title": "Baila de Gasolina",
+      "artist": "Effe Serieus",
+      "album": "Baila de Gasolina",
+      "year": 2025,
+      "playlists": ["dutch"]
     }
   ]
 }
