@@ -426,7 +426,7 @@ export default function Game() {
                   <div className="text-center mb-4">
                     <span className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-4 py-1.5 text-sm font-medium text-primary">
                       <Users className="w-4 h-4" />
-                      {currentTeam.name}{currentTeam.players.length === 1 ? "'s" : "'s"} turn
+                      {currentTeam.name.endsWith("'s Team") ? currentTeam.name : `${currentTeam.name}'s`} turn
                     </span>
                   </div>
                 )}

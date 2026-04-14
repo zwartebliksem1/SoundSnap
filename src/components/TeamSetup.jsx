@@ -27,12 +27,18 @@ function shuffle(array) {
 
 function buildAutoTeams(players, teamCount) {
   const shuffled = shuffle(players);
-  const teams = Array.from({ length: teamCount }, (_, i) => ({
-    name: `Team ${i + 1}`,
+  const teams = Array.from({ length: teamCount }, () => ({
+    name: "",
     players: [],
   }));
   shuffled.forEach((player, i) => {
     teams[i % teamCount].players.push(player);
+  });
+  // Set names based on first player
+  teams.forEach(team => {
+    if (team.players.length > 0) {
+      team.name = `${team.players[0]}'s Team`;
+    }
   });
   return teams;
 }
@@ -76,7 +82,7 @@ export default function TeamSetup({ players, onStart, onBack }) {
   }, [autoTeamOptions]);
 
   const resolvedTeams = useMemo(() => {
-    if (mode === "individual") {
+    if (players.length <= 1 || mode === "individual") {
       return players.map((p) => ({ name: p, players: [p] }));
     }
     if (mode.startsWith("auto-")) {
@@ -84,14 +90,20 @@ export default function TeamSetup({ players, onStart, onBack }) {
       return buildAutoTeams(players, count);
     }
     if (mode === "custom") {
-      const teams = Array.from({ length: customTeamCount }, (_, i) => ({
-        name: `Team ${i + 1}`,
+      const teams = Array.from({ length: customTeamCount }, () => ({
+        name: "",
         players: [],
       }));
       players.forEach((p) => {
         const teamIdx = assignments[p] ?? 0;
         if (teamIdx < customTeamCount) {
           teams[teamIdx].players.push(p);
+        }
+      });
+      // Name based on the first player inserted
+      teams.forEach(team => {
+        if (team.players.length > 0) {
+          team.name = `${team.players[0]}'s Team`;
         }
       });
       return teams.filter((t) => t.players.length > 0);
@@ -109,6 +121,8 @@ export default function TeamSetup({ players, onStart, onBack }) {
   const handleStart = () => {
     onStart({ teams: resolvedTeams, maxSongsPerTeam: maxSongs });
   };
+
+  const isSolo = players.length <= 1;
 
   // Custom team assignment sub-view
   if (customView && mode === "custom") {
@@ -231,43 +245,45 @@ export default function TeamSetup({ players, onStart, onBack }) {
       </motion.div>
 
       {/* Mode selection */}
-      <div className="flex flex-col gap-3 mb-8">
-        {modeOptions.map((opt) => {
-          const Icon = opt.icon;
-          const selected = mode === opt.id;
-          return (
-            <motion.button
-              key={opt.id}
-              variants={itemVariants}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => {
-                setMode(opt.id);
-                if (opt.id === "custom") setCustomView(false);
-              }}
-              className={`group relative flex items-center gap-4 w-full rounded-2xl border px-5 py-4 text-left transition-colors cursor-pointer ${
-                selected
-                  ? "border-primary bg-primary/10 backdrop-blur"
-                  : "border-border bg-card/60 backdrop-blur hover:border-primary/40 hover:bg-card"
-              }`}
-            >
-              <div
-                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors ${
+      {!isSolo && (
+        <div className="flex flex-col gap-3 mb-8">
+          {modeOptions.map((opt) => {
+            const Icon = opt.icon;
+            const selected = mode === opt.id;
+            return (
+              <motion.button
+                key={opt.id}
+                variants={itemVariants}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => {
+                  setMode(opt.id);
+                  if (opt.id === "custom") setCustomView(false);
+                }}
+                className={`group relative flex items-center gap-4 w-full rounded-2xl border px-5 py-4 text-left transition-colors cursor-pointer ${
                   selected
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-primary/10 text-primary group-hover:bg-primary/20"
+                    ? "border-primary bg-primary/10 backdrop-blur"
+                    : "border-border bg-card/60 backdrop-blur hover:border-primary/40 hover:bg-card"
                 }`}
               >
-                <Icon className="w-5 h-5" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-foreground">{opt.label}</p>
-                <p className="text-xs text-muted-foreground">{opt.description}</p>
-              </div>
-            </motion.button>
-          );
-        })}
-      </div>
+                <div
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors ${
+                    selected
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-primary/10 text-primary group-hover:bg-primary/20"
+                  }`}
+                >
+                  <Icon className="w-5 h-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground">{opt.label}</p>
+                  <p className="text-xs text-muted-foreground">{opt.description}</p>
+                </div>
+              </motion.button>
+            );
+          })}
+        </div>
+      )}
 
       {/* Max songs setting */}
       <motion.div variants={itemVariants} className="mb-8">
